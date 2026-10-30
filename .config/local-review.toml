@@ -1,0 +1,46 @@
+# pitcrew local-review for this monorepo: https://github.com/SzymonMrozek/pitcrew/tree/main/local-review
+name = "later-review"
+title = "Later"
+launcher = "mise run review --"
+
+[files]
+generated = ['(^|/)mix\.lock$', '(^|/)priv/static/']
+manifest = ['(^|/)mix\.exs$', '(^|/)Project\.swift$', '(^|/)Tuist\.swift$', '^mise\.toml$', '^compose\.yaml$']
+test = ['_test\.exs$', '(^|/)test/', 'Tests?\.swift$', '(^|/)Tests/']
+view = ['(^|/)Views?/', 'View\.swift$', '_json\.ex$', '_controller\.ex$']
+model = ['(^|/)Models?/', 'Model\.swift$', '(^|/)lib/later/[^/]+/[^/]+\.ex$']
+important = 'repo|worker|pipeline|billing|auth|quota|store|player|migration'
+
+# Migrations change production data; review them first.
+[[priority]]
+pattern = '^server/priv/repo/migrations/'
+label = "Migration"
+
+[[modules]]
+pattern = '^(?<group>server)/lib/(?<name>later_web|later)/(?:(?<target>[^/]+)/)?.'
+
+[[modules]]
+pattern = '^(?<group>ios)/(?<name>[^/]+)/(?:(?<target>Sources|Tests|Resources)/)?.'
+
+[simulator]
+metadata = ".worktree-simulator/simulator.env"
+udid-key = "WORKTREE_SIMULATOR_UDID"
+name-key = "WORKTREE_SIMULATOR_NAME"
+
+[merge]
+instructions = "The Worktrunk pre-merge hook runs `mise run check` for the parts the branch changed; don't run it beforehand just to repeat it."
+
+[[merge.prepare]]
+paths = ['^server/.*\.(ex|exs|heex)$']
+command = ["mise", "run", "server:format"]
+
+[[merge.checks]]
+paths = ['^ios/']
+command = ["mise", "run", "ios:run"]
+
+[demos]
+paths = ['^ios/Later/(Sources|Resources)/']
+
+[run]
+destinations = ["scripts/ios.sh", "destinations"]
+command = ["scripts/ios.sh", "run", "--udid", "{destination}"]

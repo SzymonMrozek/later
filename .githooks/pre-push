@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# This repository is public. Blocks pushes whose files or commit metadata match a private list of
+# terms (~/.config/pitcrew/forbidden-terms), using pitcrew's check. Enabled by `mise run setup`.
+set -euo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+zero=0000000000000000000000000000000000000000
+while read -r _ local_sha _ remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue
+  if [ "$remote_sha" = "$zero" ]; then
+    range="$local_sha"
+  else
+    range="$remote_sha..$local_sha"
+  fi
+  "$root/tools/pitcrew/scripts/check-forbidden-terms.sh" "$range" "$local_sha"
+done

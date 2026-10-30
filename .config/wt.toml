@@ -1,0 +1,14 @@
+# Worktrunk project hooks. Every worktree gets its own Phoenix port, Postgres databases and
+# iOS Simulator, so agents in parallel worktrees never share state.
+
+[pre-start]
+setup = "scripts/worktree-setup.sh --db '{{ branch | sanitize_db }}' --port '{{ branch | hash_port }}' --simulator 'Later {{ branch | sanitize_hash }}'"
+
+[post-start]
+copy = "wt step copy-ignored"
+
+[pre-merge]
+check = "scripts/check.sh --target '{{ target }}'"
+
+[pre-remove]
+teardown = "scripts/worktree-teardown.sh"

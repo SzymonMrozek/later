@@ -1,0 +1,84 @@
+[tools]
+erlang = "28.5"
+elixir = "1.20.4-otp-28"
+python = "3.13"
+tuist = "4.214.0"
+swiftlint = "0.65.1"
+swiftformat = "0.64.3"
+
+# Per-worktree PORT and LATER_DB_NAME come from mise.local.toml, written by .config/wt.toml.
+
+[tasks.setup]
+description = "Once after cloning: git hooks, pitcrew, Postgres and server dependencies."
+run = '''
+git config core.hooksPath .githooks
+git submodule update --init
+mise run db:up
+cd server && mix setup
+'''
+
+[tasks."db:up"]
+description = "Start the Postgres container shared by every worktree."
+run = "docker compose up -d --wait postgres"
+
+[tasks."server:dev"]
+description = "Run the Phoenix API on this worktree's PORT and database."
+dir = "server"
+depends = ["db:up"]
+run = '''
+mix do ecto.create --quiet + ecto.migrate --quiet
+mix phx.server
+'''
+
+[tasks."server:test"]
+description = "Run server tests against this worktree's test database."
+dir = "server"
+depends = ["db:up"]
+run = "mix test"
+
+[tasks."server:format"]
+description = "Format Elixir sources."
+dir = "server"
+run = "mix format"
+
+[tasks."server:lint"]
+description = "Format check, warnings as errors, Credo and Sobelow."
+dir = "server"
+run = "mix lint"
+
+[tasks."ios:generate"]
+description = "Generate the Xcode workspace with Tuist."
+dir = "ios"
+run = "tuist generate --no-open"
+
+[tasks."ios:build"]
+description = "Build the app for this worktree's simulator."
+run = "scripts/ios.sh build"
+
+[tasks."ios:test"]
+description = "Run iOS tests on this worktree's simulator."
+run = "scripts/ios.sh test"
+
+[tasks."ios:run"]
+description = "Build, install and launch the app on this worktree's simulator."
+run = "scripts/ios.sh run"
+
+[tasks."ios:lint"]
+description = "SwiftLint and SwiftFormat in check mode."
+dir = "ios"
+run = '''
+swiftlint lint --strict --quiet
+swiftformat --lint .
+'''
+
+[tasks.lint]
+description = "Every linter in the repository."
+depends = ["server:lint", "ios:lint"]
+
+[tasks.check]
+description = "What the merge queue runs: lint and tests for the parts this branch changed."
+run = "scripts/check.sh"
+
+[tasks.review]
+description = "Open pitcrew local-review for this worktree (review, approve, merge queue)."
+run = "python3 tools/pitcrew/local-review/server.py"

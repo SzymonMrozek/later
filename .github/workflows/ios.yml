@@ -1,0 +1,24 @@
+name: ios
+
+on:
+  pull_request:
+    paths: ["ios/**", "scripts/ios.sh", "mise.toml", ".github/workflows/ios.yml"]
+  push:
+    branches: [main]
+    paths: ["ios/**", "scripts/ios.sh", "mise.toml", ".github/workflows/ios.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # v5.2.4
+        with:
+          install_args: python tuist swiftlint swiftformat
+      - run: mise run ios:lint
+      - run: mise run ios:test

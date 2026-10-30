@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Per-worktree state written by .config/wt.toml hooks
+mise.local.toml
+.worktree-simulator/
+
+# Build output from scripts/ios.sh
+/.build/
+
+# Tuist-generated Xcode projects
+ios/*.xcodeproj
+ios/*.xcworkspace
+ios/Derived/
+
+# Secrets never go in this public repository
+.env
+.env.*
+!.env.example

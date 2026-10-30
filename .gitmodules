@@ -1,0 +1,3 @@
+[submodule "tools/pitcrew"]
+	path = tools/pitcrew
+	url = https://github.com/SzymonMrozek/pitcrew.git

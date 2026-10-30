@@ -1,0 +1,515 @@
+<title>Later Product Maps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one scrolling page of five maps; each map is a wide visual, text kept to labels. */
+:root{
+  --bg:#F4F5F9; --surface:#FFFFFF; --fg:#17161F; --muted:#5F5B70; --line:#DAD8E5;
+  --ios:#2A63D4; --ios-soft:#E5EDFC;
+  --ex:#6A3FB5; --ex-soft:#EFE8FA;
+  --ai:#B86E06; --ai-soft:#FBEFDA;
+  --store:#23866A; --store-soft:#DFF2EA;
+  --apple:#55545F; --apple-soft:#E9E9EF;
+  --bad:#C03A55;
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111017; --surface:#1A1922; --fg:#ECEAF4; --muted:#A29EB4; --line:#2E2C3A;
+  --ios:#77A0FF; --ios-soft:#18223D; --ex:#AE90EC; --ex-soft:#241C37;
+  --ai:#F0AA42; --ai-soft:#31250F; --store:#5DCAA3; --store-soft:#112D26;
+  --apple:#BAB9C7; --apple-soft:#25242D; --bad:#F07A92; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111017; --surface:#1A1922; --fg:#ECEAF4; --muted:#A29EB4; --line:#2E2C3A;
+  --ios:#77A0FF; --ios-soft:#18223D; --ex:#AE90EC; --ex-soft:#241C37;
+  --ai:#F0AA42; --ai-soft:#31250F; --store:#5DCAA3; --store-soft:#112D26;
+  --apple:#BAB9C7; --apple-soft:#25242D; --bad:#F07A92; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.45}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:grid;gap:44px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(30px,5vw,44px);line-height:1.05}
+h2{font-size:24px}
+.eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+header{display:grid;gap:14px}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav a{font:500 13px var(--f-body);color:var(--fg);text-decoration:none;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav a:hover,nav a:focus-visible{border-color:var(--ex);color:var(--ex);outline:none}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+section{display:grid;gap:16px;scroll-margin-top:16px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.note{font-size:12px;color:var(--muted)}
+
+/* architecture svg */
+#arch{display:block;min-width:820px;width:100%;height:auto}
+#arch text{font-family:var(--f-body);fill:var(--fg)}
+#arch .h{font:600 14px var(--f-display)}
+#arch .s{font-size:10.5px;fill:var(--muted)}
+#arch .lbl{font:500 10.5px var(--f-mono);fill:var(--muted)}
+#arch .n{fill:var(--surface);stroke:var(--line)}
+#arch .c-ios{fill:var(--ios-soft);stroke:var(--ios)}
+#arch .c-ex{fill:var(--ex-soft);stroke:var(--ex)}
+#arch .chip{fill:var(--surface);stroke:var(--ex)}
+#arch .x-ai{fill:var(--ai-soft);stroke:var(--ai)}
+#arch .x-st{fill:var(--store-soft);stroke:var(--store)}
+#arch .x-ap{fill:var(--apple-soft);stroke:var(--apple)}
+#arch .x-web{fill:var(--surface);stroke:var(--muted);stroke-dasharray:4 3}
+#arch .ar{fill:none;stroke:var(--muted);stroke-width:1.4}
+#arch .hd-ios{fill:var(--ios)} #arch .hd-ex{fill:var(--ex)}
+#arch marker path{fill:var(--muted)}
+.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.stack div{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.stack b{font:600 12px var(--f-body);width:100%;color:var(--muted)}
+.tag{font:500 12px var(--f-mono);padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--surface)}
+.t-ios{border-color:var(--ios);color:var(--ios)} .t-ex{border-color:var(--ex);color:var(--ex)} .t-ai{border-color:var(--ai);color:var(--ai)}
+
+/* pipeline */
+.pipe{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:14px}
+@media (max-width:820px){.pipe{grid-template-columns:1fr}}
+.band{border-radius:14px;padding:14px;display:grid;gap:10px;align-content:start}
+.band.cheap{background:var(--store-soft);border:1px solid var(--store)}
+.band.dear{background:var(--ai-soft);border:1px solid var(--ai)}
+.band-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font:600 13px var(--f-body)}
+.steps{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;flex:1 1 130px;min-width:0;display:grid;gap:4px;align-content:start}
+.step .nm{font:600 14px var(--f-display)}
+.step .en{font-size:12px;color:var(--muted)}
+.step .co{font:500 13px var(--f-mono)}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.tip{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
+.tip i{font:600 11px var(--f-mono);font-style:normal;color:var(--ex);background:var(--ex-soft);border-radius:5px;padding:2px 6px;flex:none}
+
+/* roadmap */
+.road{display:grid;grid-template-columns:120px repeat(5,minmax(150px,1fr));min-width:900px}
+.road > div{padding:10px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);min-width:0}
+.road > div:nth-child(6n){border-right:none}
+.ph{display:grid;gap:4px;background:var(--bg)}
+.ph .wk{font:500 11px var(--f-mono);color:var(--muted)}
+.ph .pn{font:600 15px var(--f-display)}
+.ph.now{background:var(--ex-soft)}
+.ph.now .pn::after{content:"you are here";margin-left:8px;font:500 10px var(--f-mono);color:var(--surface);background:var(--ex);padding:2px 6px;border-radius:4px;vertical-align:middle}
+.lane{font:600 12px var(--f-body);color:var(--muted);display:flex;align-items:center;gap:8px}
+.bar{border-radius:8px;padding:7px 9px;font-size:12.5px;line-height:1.3}
+.b-ios{background:var(--ios-soft);border-left:3px solid var(--ios)}
+.b-ex{background:var(--ex-soft);border-left:3px solid var(--ex)}
+.b-ai{background:var(--ai-soft);border-left:3px solid var(--ai)}
+.b-ap{background:var(--apple-soft);border-left:3px solid var(--apple)}
+.gate{display:flex;gap:8px;align-items:flex-start;font-size:12px}
+.gate .dia{width:10px;height:10px;background:var(--store);transform:rotate(45deg);flex:none;margin-top:3px}
+.ms{font:600 12px var(--f-body);color:var(--store)}
+
+/* decisions */
+.filter{display:flex;flex-wrap:wrap;gap:8px}
+.filter button{font:500 12px var(--f-body);padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.filter button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.filter button:focus-visible{outline:2px solid var(--ex);outline-offset:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:6px;align-content:start}
+.card .ar{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.card .ch{font:600 16px/1.2 var(--f-display)}
+.card .why{font-size:12.5px;color:var(--muted)}
+.pill{font:600 10px var(--f-mono);padding:2px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.p-yours{background:var(--store-soft);color:var(--store)}
+.p-rec{background:var(--ex-soft);color:var(--ex)}
+.p-open{background:var(--ai-soft);color:var(--ai)}
+
+/* cost */
+.costgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:860px){.costgrid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:14px;align-content:start}
+.panel h3{margin:0;font:600 15px var(--f-display)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:500 12px var(--f-body);padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.seg button[aria-pressed="true"]{border-color:var(--ex);background:var(--ex-soft);color:var(--ex)}
+.seg button:focus-visible{outline:2px solid var(--ex);outline-offset:2px}
+.ctl{display:grid;gap:6px}
+.ctl > span{font-size:12px;color:var(--muted)}
+.sc{display:grid;gap:4px}
+.sc-top{display:flex;justify-content:space-between;font-size:13px;gap:8px}
+.track{height:22px;border-radius:6px;background:var(--bg);display:flex;overflow:hidden}
+.track span{height:100%}
+.k-cat{background:var(--store)} .k-sum{background:var(--ai)} .k-tr{background:var(--ex)} .k-v{background:var(--ios)}
+.k-vat{background:var(--line)} .k-apple{background:var(--apple)} .k-mar{background:var(--store)} .k-ai{background:var(--ai)}
+.sl{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:10px;align-items:center}
+.sl label{font-size:13px}
+.sl output{font:500 13px var(--f-mono);text-align:right}
+input[type=range]{width:100%;accent-color:var(--ex);grid-column:1/-1}
+.big{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.big div{background:var(--bg);border-radius:10px;padding:10px;display:grid;gap:2px;min-width:0}
+.big b{font:600 20px var(--f-mono);font-variant-numeric:tabular-nums}
+.big small{font-size:11px;color:var(--muted)}
+.neg{color:var(--bad)}
+.fixed{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.tier{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--x);border-radius:14px;padding:14px 16px;display:grid;gap:8px;align-content:start}
+.tier .tn{font:700 19px var(--f-display)}
+.tier .tp{font:500 14px var(--f-mono);color:var(--x)}
+.tier ul{margin:0;padding-left:18px;font-size:13px;display:grid;gap:3px}
+.tier .tc{font:500 12px var(--f-mono);color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.fixed div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:2px}
+.fixed b{font:500 16px var(--f-mono)}
+.fixed small{font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.track span{transition:width .25s ease}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Later · read · watch · summarize · maps v1 · 30 Oct 2026</span>
+  <h1>Later, mapped</h1>
+  <nav>
+    <a href="#architecture">Architecture</a>
+    <a href="#pipeline">AI + voice pipeline</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#decisions">Assumptions</a>
+    <a href="#cost">Tiers + cost</a>
+  </nav>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--ios)"></i>iPhone · Swift</span>
+    <span><i class="sw" style="background:var(--ex)"></i>Server · Elixir</span>
+    <span><i class="sw" style="background:var(--ai)"></i>AI + voice vendors</span>
+    <span><i class="sw" style="background:var(--store)"></i>Storage · cheap</span>
+    <span><i class="sw" style="background:var(--apple)"></i>Apple</span>
+  </div>
+</header>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section id="architecture">
+  <div class="sec-head"><span class="eyebrow">Map 1</span><h2>Architecture</h2></div>
+  <div class="scroll">
+  <svg id="arch" viewBox="0 0 1000 560" role="img" aria-label="Architecture: iPhone app talks to an Elixir server, which calls Claude, a neural TTS vendor (Later+) or ElevenLabs (Studio) and stores audio in R2; Apple handles payments, sign-in and push.">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+    </defs>
+
+    <!-- iPhone column -->
+    <rect class="c-ios" x="20" y="40" width="280" height="420" rx="16"/>
+    <text class="h hd-ios" x="40" y="66">iPhone · Swift + SwiftUI</text>
+    <g>
+      <rect class="n" x="40" y="80" width="240" height="40" rx="8"/><text x="54" y="99">Share Extension</text><text class="s" x="54" y="113">save from Safari, X, YouTube</text>
+      <rect class="n" x="40" y="130" width="240" height="40" rx="8"/><text x="54" y="149">Library + Reader</text><text class="s" x="54" y="163">categories · status · text</text>
+      <rect class="n" x="40" y="180" width="240" height="40" rx="8"/><text x="54" y="199">Player · AVQueuePlayer</text><text class="s" x="54" y="213">background · lock screen · AirPods</text>
+      <rect class="n" x="40" y="230" width="240" height="40" rx="8"/><text x="54" y="249">Offline cache</text><text class="s" x="54" y="263">SwiftData + audio files</text>
+      <rect class="n" x="40" y="280" width="240" height="40" rx="8"/><text x="54" y="299">On-device voice</text><text class="s" x="54" y="313">Later Free · $0 · AVSpeechSynthesizer</text>
+      <rect class="n" x="40" y="330" width="240" height="40" rx="8"/><text x="54" y="349">StoreKit 2 paywall</text><text class="s" x="54" y="363">Free · Later+ · Later Studio</text>
+      <rect class="n" x="40" y="380" width="240" height="40" rx="8"/><text x="54" y="399">Sign in with Apple</text><text class="s" x="54" y="413">only login method</text>
+    </g>
+
+    <!-- Elixir column -->
+    <rect class="c-ex" x="360" y="40" width="320" height="420" rx="16"/>
+    <text class="h hd-ex" x="380" y="66">Elixir · Phoenix · Fly.io</text>
+    <rect class="n" x="380" y="80" width="280" height="40" rx="8"/><text x="394" y="99">Phoenix JSON API</text><text class="s" x="394" y="113">items · progress · prefs</text>
+    <rect class="n" x="380" y="130" width="280" height="40" rx="8"/><text x="394" y="149">Auth · tiers · quotas</text><text class="s" x="394" y="163">per-tier limits · blocks spend first</text>
+    <rect class="n" x="380" y="180" width="280" height="150" rx="10"/>
+    <text x="394" y="202" style="font-weight:600">Oban pipeline</text><text class="s" x="490" y="202">jobs in Postgres · retries</text>
+    <g>
+      <rect class="chip" x="392" y="212" width="125" height="28" rx="6"/><text x="404" y="231">1 Fetch</text>
+      <rect class="chip" x="523" y="212" width="125" height="28" rx="6"/><text x="535" y="231">2 Extract</text>
+      <rect class="chip" x="392" y="248" width="125" height="28" rx="6"/><text x="404" y="267">3 Categorize</text>
+      <rect class="chip" x="523" y="248" width="125" height="28" rx="6"/><text x="535" y="267">4 Summarize</text>
+      <rect class="chip" x="392" y="284" width="125" height="28" rx="6"/><text x="404" y="303">5 Translate</text>
+      <rect class="chip" x="523" y="284" width="125" height="28" rx="6"/><text x="535" y="303">6 Voice</text>
+    </g>
+    <rect class="n" x="380" y="340" width="280" height="40" rx="8"/><text x="394" y="359">App Store webhooks · push</text><text class="s" x="394" y="373">subscription state · "ready" alerts</text>
+    <rect class="n" x="380" y="390" width="280" height="40" rx="8"/><text x="394" y="409">Postgres</text><text class="s" x="394" y="423">data + job queue · no Redis</text>
+
+    <!-- external -->
+    <text class="h" x="740" y="66">Outside services</text>
+    <rect class="x-st" x="740" y="80" width="240" height="44" rx="10"/><text x="754" y="99">Cloudflare R2</text><text class="s" x="754" y="114">audio files · zero egress fees</text>
+    <rect class="x-web" x="740" y="140" width="240" height="44" rx="10"/><text x="754" y="159">Source websites</text><text class="s" x="754" y="174">articles · later: video</text>
+    <rect class="x-ai" x="740" y="200" width="240" height="56" rx="10"/><text x="754" y="222" style="font-weight:600">Claude API</text><text class="s" x="754" y="240">Haiku 5.5 · Sonnet 5.5 · Opus 5.5</text>
+    <rect class="x-ai" x="740" y="272" width="240" height="56" rx="10"/><text x="754" y="290" style="font-weight:600">TTS · swappable adapter</text><text class="s" x="754" y="306">Later+ · Azure / Google neural</text><text class="s" x="754" y="320">Studio · ElevenLabs</text>
+    <rect class="x-ap" x="740" y="344" width="240" height="86" rx="10"/><text x="754" y="366" style="font-weight:600">Apple</text><text class="s" x="754" y="384">App Store Server API</text><text class="s" x="754" y="400">APNs push</text><text class="s" x="754" y="416">Sign in with Apple keys</text>
+
+    <!-- arrows -->
+    <line class="ar" x1="280" y1="100" x2="377" y2="100" marker-end="url(#ah)"/>
+    <text class="lbl" x="304" y="92">HTTPS</text>
+    <line class="ar" x1="660" y1="216" x2="737" y2="104" marker-end="url(#ah)"/>
+    <text class="lbl" x="676" y="168">audio</text>
+    <line class="ar" x1="660" y1="236" x2="737" y2="164" marker-end="url(#ah)"/>
+    <line class="ar" x1="660" y1="262" x2="737" y2="228" marker-end="url(#ah)"/>
+    <text class="lbl" x="690" y="238">text</text>
+    <line class="ar" x1="660" y1="300" x2="737" y2="300" marker-end="url(#ah)"/>
+    <text class="lbl" x="676" y="294">speech</text>
+    <line class="ar" x1="737" y1="370" x2="663" y2="356" marker-start="url(#ah)" marker-end="url(#ah)"/>
+    <text class="lbl" x="676" y="392">billing</text>
+    <path class="ar" d="M860 80 V20 H160 V37" marker-end="url(#ah)"/>
+    <text class="lbl" x="420" y="14">download audio for offline · signed URL, never through server</text>
+    <path class="ar" d="M160 463 V520 H860 V433" marker-start="url(#ah)" marker-end="url(#ah)"/>
+    <text class="lbl" x="390" y="540">purchase · sign-in · push notifications</text>
+  </svg>
+  </div>
+  <div class="stack">
+    <div><b>iPhone</b><span class="tag t-ios">SwiftUI</span><span class="tag t-ios">SwiftData</span><span class="tag t-ios">AVFoundation</span><span class="tag t-ios">MediaPlayer</span><span class="tag t-ios">StoreKit 2</span><span class="tag t-ios">BackgroundTasks</span></div>
+    <div><b>Elixir</b><span class="tag t-ex">Phoenix</span><span class="tag t-ex">Ecto</span><span class="tag t-ex">Oban</span><span class="tag t-ex">Req</span><span class="tag t-ex">Floki</span><span class="tag t-ex">ExAws.S3</span><span class="tag t-ex">Pigeon</span><span class="tag t-ex">JOSE</span></div>
+    <div><b>AI + voice</b><span class="tag t-ai">Claude via Req (no SDK)</span><span class="tag t-ai">JSON output</span><span class="tag t-ai">TTS behaviour</span><span class="tag t-ai">ElevenLabs (Studio)</span><span class="tag t-ai">ffmpeg</span></div>
+  </div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section id="pipeline">
+  <div class="sec-head"><span class="eyebrow">Map 2</span><h2>One article through the pipeline</h2><span class="note">2,000-word English article → Polish · Sonnet 5.5 · Later+ neural voice</span></div>
+  <div class="pipe">
+    <div class="band cheap">
+      <div class="band-h"><span>On save · automatic</span><span class="mono">≈ $0.02</span></div>
+      <div class="steps">
+        <div class="step"><span class="nm">Fetch</span><span class="en">Req · Oban</span><span class="co">$0</span></div>
+        <div class="step"><span class="nm">Extract</span><span class="en">Readability → Haiku fallback</span><span class="co">≈ $0</span></div>
+        <div class="step"><span class="nm">Categorize</span><span class="en">Haiku 5.5</span><span class="co">$0.0004</span></div>
+        <div class="step"><span class="nm">Summary</span><span class="en">straight into Polish</span><span class="co">$0.016</span></div>
+      </div>
+    </div>
+    <div class="band dear">
+      <div class="band-h"><span>On tap “Listen” · once, then cached</span><span class="mono">≈ $0.26</span></div>
+      <div class="steps">
+        <div class="step"><span class="nm">Translate</span><span class="en">per paragraph</span><span class="co">$0.049</span></div>
+        <div class="step"><span class="nm">Voice</span><span class="en">≈13k chars</span><span class="co">$0.21</span></div>
+        <div class="step"><span class="nm">R2 + push</span><span class="en">key: url·lang·voice</span><span class="co">≈ $0</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="tips">
+    <div class="tip"><i>01</i><span>Voice is ~80% of cost. Generate it only when someone presses play.</span></div>
+    <div class="tip"><i>02</i><span>Cache audio by URL + language + voice. A second listener costs $0.</span></div>
+    <div class="tip"><i>03</i><span>Split by paragraph. Same IDs in source, translation and audio → resume and “Expand this fragment”.</span></div>
+    <div class="tip"><i>04</i><span>Ask Claude for JSON (title, categories, summary, paragraph links). One call, no parsing.</span></div>
+    <div class="tip"><i>05</i><span>Start Opus 5.5 at low effort, measure quality, then try Sonnet 5.5 and Haiku 5.5 on the same 30 articles.</span></div>
+    <div class="tip"><i>06</i><span>Non-urgent summaries can go through the Batch API at half price.</span></div>
+  </div>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section id="roadmap">
+  <div class="sec-head"><span class="eyebrow">Map 3</span><h2>Roadmap</h2><span class="note">weeks are estimates for one developer</span></div>
+  <div class="scroll">
+  <div class="road">
+    <div></div>
+    <div class="ph now"><span class="wk">W1–2</span><span class="pn">0 · Spike</span></div>
+    <div class="ph"><span class="wk">W3–6</span><span class="pn">1 · Alpha</span></div>
+    <div class="ph"><span class="wk">W7–10</span><span class="pn">2 · Beta</span></div>
+    <div class="ph"><span class="wk">W11–14</span><span class="pn">3 · Launch</span></div>
+    <div class="ph"><span class="wk">W15+</span><span class="pn">4 · Grow</span></div>
+
+    <div class="lane"><i class="sw" style="background:var(--ios)"></i>iPhone</div>
+    <div><div class="bar b-ios">SwiftUI shell · play one MP3 in background</div></div>
+    <div><div class="bar b-ios">Share extension · library · reader · player</div></div>
+    <div><div class="bar b-ios">Queue · offline download · lock screen · progress</div></div>
+    <div><div class="bar b-ios">Paywall · 3 tiers · onboarding · polish</div></div>
+    <div><div class="bar b-ios">“I have 20 min” · Expand fragment · CarPlay</div></div>
+
+    <div class="lane"><i class="sw" style="background:var(--ex)"></i>Elixir</div>
+    <div><div class="bar b-ex">Phoenix + Oban + Postgres on Fly</div></div>
+    <div><div class="bar b-ex">Pipeline v1 · Sign in with Apple · R2</div></div>
+    <div><div class="bar b-ex">Progress sync · push · quotas per tier</div></div>
+    <div><div class="bar b-ex">App Store webhooks · tier entitlements · backups</div></div>
+    <div><div class="bar b-ex">Video: YouTube / X transcripts</div></div>
+
+    <div class="lane"><i class="sw" style="background:var(--ai)"></i>AI + voice</div>
+    <div><div class="bar b-ai">Voice bake-off incl. ElevenLabs · 50-URL extraction test</div></div>
+    <div><div class="bar b-ai">Summary + translation prompts</div></div>
+    <div><div class="bar b-ai">30-article eval set · real cost per article</div></div>
+    <div><div class="bar b-ai">Model / effort tuning · shared cache</div></div>
+    <div><div class="bar b-ai">More languages · voice choice</div></div>
+
+    <div class="lane"><i class="sw" style="background:var(--apple)"></i>Apple</div>
+    <div><div class="bar b-ap">Developer Program · bundle ID</div></div>
+    <div><div class="bar b-ap">TestFlight · just you</div></div>
+    <div><div class="bar b-ap">TestFlight · 30 testers · analytics</div></div>
+    <div><div class="bar b-ap">Price · App Review · release</div></div>
+    <div><div class="bar b-ap">Retention experiments</div></div>
+
+    <div class="lane">Gate</div>
+    <div class="gate"><i class="dia"></i><span>Voice per tier picked · ≥85% pages extracted · cost/article measured</span></div>
+    <div class="gate"><i class="dia"></i><span>You listen daily for 1 week</span></div>
+    <div class="gate"><i class="dia"></i><span>Testers return on day 7 · finish what they start</span></div>
+    <div class="gate"><i class="dia"></i><span class="ms">App Store 1.0</span></div>
+    <div class="gate"><i class="dia"></i><span>Revenue ≥ AI + hosting</span></div>
+  </div>
+  </div>
+</section>
+
+<!-- ============ DECISIONS ============ -->
+<section id="decisions">
+  <div class="sec-head"><span class="eyebrow">Map 4</span><h2>Assumptions</h2></div>
+  <div class="filter" role="group" aria-label="Filter assumptions">
+    <button type="button" data-f="all" aria-pressed="true">All</button>
+    <button type="button" data-f="yours" aria-pressed="false">From you</button>
+    <button type="button" data-f="rec" aria-pressed="false">Recommended</button>
+    <button type="button" data-f="open" aria-pressed="false">Open</button>
+  </div>
+  <div class="cards" id="cards">
+    <div class="card" data-s="yours"><span class="ar">Server<span class="pill p-yours">from you</span></span><span class="ch">Elixir</span><span class="why">Phoenix + Oban. Concurrency fits a job pipeline.</span></div>
+    <div class="card" data-s="yours"><span class="ar">Platform<span class="pill p-yours">from you</span></span><span class="ch">iPhone first</span><span class="why">App Store subscriptions pay for tokens.</span></div>
+    <div class="card" data-s="yours"><span class="ar">Scope<span class="pill p-yours">from you</span></span><span class="ch">Articles in v1, video later</span><span class="why">Text pipeline first; transcripts reuse it.</span></div>
+    <div class="card" data-s="yours"><span class="ar">Budget<span class="pill p-yours">from you</span></span><span class="ch">Low fixed cost</span><span class="why">≈ $15–35 / month before users.</span></div>
+    <div class="card" data-s="yours"><span class="ar">Tiers<span class="pill p-yours">from you</span></span><span class="ch">Free · Later+ · Studio</span><span class="why">Voice quality is what you pay for.</span></div>
+    <div class="card" data-s="rec"><span class="ar">App<span class="pill p-rec">recommended</span></span><span class="ch">Native Swift + SwiftUI</span><span class="why">Elixir can't run the phone side. Audio, share sheet, StoreKit need native.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Shape<span class="pill p-rec">recommended</span></span><span class="ch">One Phoenix monolith</span><span class="why">API + jobs + webhooks in one deploy. Split later if ever.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Jobs<span class="pill p-rec">recommended</span></span><span class="ch">Oban on Postgres</span><span class="why">Retries, rate limits, no Redis.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Hosting<span class="pill p-rec">recommended</span></span><span class="ch">Fly.io, EU region</span><span class="why">One small VM. Hetzner if you want even cheaper.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Audio storage<span class="pill p-rec">recommended</span></span><span class="ch">Cloudflare R2</span><span class="why">Free egress. Phone downloads directly.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Text AI<span class="pill p-rec">recommended</span></span><span class="ch">Claude API over Req</span><span class="why">No official Elixir SDK; plain HTTP + JSON output.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Voice<span class="pill p-rec">recommended</span></span><span class="ch">Swappable TTS adapter</span><span class="why">Elixir behaviour. Vendor picked by blind listening test.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Voice per tier<span class="pill p-rec">recommended</span></span><span class="ch">Device · Neural · ElevenLabs</span><span class="why">Free $0 · Later+ ≈$16/M chars · Studio ≈$50–100/M.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Free summaries<span class="pill p-rec">recommended</span></span><span class="ch">Haiku 5.5 · capped</span><span class="why">≈10 / month keeps a free user ≈ $0.03.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Payments<span class="pill p-rec">recommended</span></span><span class="ch">StoreKit 2 + server notifications</span><span class="why">No third-party fee. RevenueCat only if it gets painful.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Login<span class="pill p-rec">recommended</span></span><span class="ch">Sign in with Apple only</span><span class="why">No passwords, no email flows.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Cost control<span class="pill p-rec">recommended</span></span><span class="ch">Lazy + cached + metered</span><span class="why">Pay on play, cache once, monthly credits per user.</span></div>
+    <div class="card" data-s="rec"><span class="ar">Insight<span class="pill p-rec">recommended</span></span><span class="ch">PostHog + Sentry free tiers</span><span class="why">Measures returns and completions from day one.</span></div>
+    <div class="card" data-s="open"><span class="ar">Price<span class="pill p-open">open</span></span><span class="ch">Later+ $6.99 · Studio $14.99?</span><span class="why">Try the calculator below.</span></div>
+    <div class="card" data-s="open"><span class="ar">Studio cap<span class="pill p-open">open</span></span><span class="ch">≈10 full listens / month?</span><span class="why">Then fall back to Later+ voice. Unlimited loses money.</span></div>
+    <div class="card" data-s="open"><span class="ar">Studio model<span class="pill p-open">open</span></span><span class="ch">ElevenLabs Flash or v3?</span><span class="why">v3 sounds richer, costs ≈2×.</span></div>
+    <div class="card" data-s="open"><span class="ar">Later+ vendor<span class="pill p-open">open</span></span><span class="ch">Decided in Spike</span><span class="why">Azure vs Google Polish. ElevenLabs is the bar.</span></div>
+    <div class="card" data-s="open"><span class="ar">iOS minimum<span class="pill p-open">open</span></span><span class="ch">iOS 17+?</span><span class="why">SwiftData and Observation need 17.</span></div>
+    <div class="card" data-s="open"><span class="ar">Video in v1<span class="pill p-open">open</span></span><span class="ch">Save link only?</span><span class="why">Stored, not processed, until phase 4.</span></div>
+    <div class="card" data-s="open"><span class="ar">Rights<span class="pill p-open">open</span></span><span class="ch">Shared audio cache</span><span class="why">Check copyright before sharing derived audio across users.</span></div>
+  </div>
+</section>
+
+<!-- ============ COST ============ -->
+<section id="cost">
+  <div class="sec-head"><span class="eyebrow">Map 5</span><h2>Tiers + cost</h2><span class="note">Claude list prices Oct 2026 · TTS rates typical, verify in Spike · before cache sharing</span></div>
+  <div class="tiers">
+    <div class="tier" style="--x:var(--apple)"><span class="tn">Later Free</span><span class="tp">$0</span>
+      <ul><li>Save · read · categories</li><li>≈10 summaries / month · Haiku</li><li>On-device voice</li></ul>
+      <span class="tc">AI ≈ $0.03 / user / month</span></div>
+    <div class="tier" style="--x:var(--ios)"><span class="tn">Later+</span><span class="tp">≈ $6.99 / month</span>
+      <ul><li>Unlimited summaries</li><li>Listen in Polish · full articles</li><li>Neural voice · Azure / Google</li><li>Offline · sync</li></ul>
+      <span class="tc">AI + voice ≈ $3.40 / user / month</span></div>
+    <div class="tier" style="--x:var(--ai)"><span class="tn">Later Studio</span><span class="tp">≈ $14.99 / month</span>
+      <ul><li>Everything in Later+</li><li>ElevenLabs voice</li><li>≈10 full Studio listens, then Later+ voice</li></ul>
+      <span class="tc">AI + voice ≈ $8.50 / user / month</span></div>
+  </div>
+  <div class="costgrid">
+    <div class="panel">
+      <h3>Per article</h3>
+      <div class="ctl"><span>Text model</span>
+        <div class="seg" id="m-seg">
+          <button type="button" data-v="opus" aria-pressed="false">Opus 5.5</button>
+          <button type="button" data-v="sonnet" aria-pressed="true">Sonnet 5.5</button>
+          <button type="button" data-v="haiku" aria-pressed="false">Haiku 5.5</button>
+        </div></div>
+      <div class="ctl"><span>Voice</span>
+        <div class="seg" id="v-seg">
+          <button type="button" data-v="device" aria-pressed="false">Free · device $0</button>
+          <button type="button" data-v="neural" aria-pressed="true">Later+ · neural ≈$16/M</button>
+          <button type="button" data-v="flash" aria-pressed="false">Studio · 11Labs Flash ≈$50/M</button>
+          <button type="button" data-v="v3" aria-pressed="false">11Labs v3 ≈$100/M</button>
+        </div></div>
+      <div id="scen"></div>
+      <div class="legend">
+        <span><i class="sw k-cat"></i>categorize</span><span><i class="sw k-sum"></i>summary</span><span><i class="sw k-tr"></i>translation</span><span><i class="sw k-v"></i>voice</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>One subscriber, one month</h3>
+      <div class="ctl"><span>Tier</span>
+        <div class="seg" id="tier-seg">
+          <button type="button" data-v="plus" aria-pressed="true">Later+ · neural</button>
+          <button type="button" data-v="studio" aria-pressed="false">Later Studio · 11Labs Flash</button>
+        </div></div>
+      <div class="ctl"><span>Price</span>
+        <div class="seg" id="p-seg"></div></div>
+      <div class="ctl"><span>Where</span>
+        <div class="seg" id="t-seg">
+          <button type="button" data-v="0.23" aria-pressed="true">Poland · 23% VAT</button>
+          <button type="button" data-v="0" aria-pressed="false">US · no VAT</button>
+        </div></div>
+      <div class="sl"><label for="r-saved">Articles saved</label><output id="o-saved">40</output><input type="range" id="r-saved" min="0" max="120" value="40"></div>
+      <div class="sl"><label for="r-sum">Summaries listened</label><output id="o-sum">20</output><input type="range" id="r-sum" min="0" max="120" value="20"></div>
+      <div class="sl"><label for="r-full">Full articles listened</label><output id="o-full">8</output><input type="range" id="r-full" min="0" max="60" value="8"></div>
+      <div class="track" id="split" aria-label="Where the price goes"></div>
+      <div class="legend"><span><i class="sw k-vat"></i>VAT</span><span><i class="sw k-apple"></i>Apple 15%</span><span><i class="sw k-ai"></i>AI + voice</span><span><i class="sw k-mar"></i>left for you</span></div>
+      <div class="big">
+        <div><small>AI + voice</small><b id="b-ai">–</b></div>
+        <div><small>Left per user</small><b id="b-mar">–</b></div>
+        <div><small>Users to cover $30 fixed</small><b id="b-be">–</b></div>
+      </div>
+      <span class="note" id="cap"></span>
+    </div>
+  </div>
+  <div class="fixed">
+    <div><small>Fly.io VM</small><b>$5–10</b></div>
+    <div><small>Postgres</small><b>$0–15</b></div>
+    <div><small>Cloudflare R2</small><b>$0–2</b></div>
+    <div><small>Apple Developer</small><b>$8</b><small>$99 / year</small></div>
+    <div><small>Sentry · PostHog</small><b>$0</b></div>
+    <div><small>Fixed / month</small><b>≈ $15–35</b></div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+  // Per 2,000-word EN article → PL. Tokens: ~3.2k in; summary ~1k out; translation ~4.3k out (incl. thinking).
+  var MODEL={opus:{sum:.033,tr:.099},sonnet:{sum:.016,tr:.049},haiku:{sum:.0008,tr:.0025}};
+  var CAT=.0004;
+  // Voice: summary ≈2.2k chars, full ≈13k chars. 11Labs Flash ≈$50/M, v3 ≈$100/M.
+  var VOICE={device:{s:0,f:0},neural:{s:.035,f:.21},flash:{s:.11,f:.65},v3:{s:.22,f:1.3}};
+  var TIER={plus:{v:"neural",prices:[4.99,6.99,9.99],p:6.99},studio:{v:"flash",prices:[12.99,14.99,19.99],p:14.99}};
+  var st={m:"sonnet",v:"neural",t:"plus",p:6.99,vat:.23};
+  var $=function(id){return document.getElementById(id)};
+  var fmt=function(n){return (n<0?"−$":"$")+Math.abs(n).toFixed(Math.abs(n)<.1?3:2)};
+
+  function seg(id,key,num,after){
+    var el=$(id);
+    el.addEventListener("click",function(e){
+      var b=e.target.closest("button"); if(!b) return;
+      el.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});
+      st[key]=num?parseFloat(b.dataset.v):b.dataset.v; if(after) after(); render();
+    });
+  }
+  function prices(){
+    $("p-seg").innerHTML=TIER[st.t].prices.map(function(p){
+      return '<button type="button" data-v="'+p+'" aria-pressed="'+(p===st.p)+'">$'+p+'</button>';
+    }).join("");
+  }
+  seg("m-seg","m"); seg("v-seg","v"); seg("p-seg","p",true); seg("t-seg","vat",true);
+  seg("tier-seg","t",false,function(){ st.p=TIER[st.t].p; prices(); });
+  prices();
+  ["saved","sum","full"].forEach(function(k){
+    $("r-"+k).addEventListener("input",function(){ $("o-"+k).textContent=this.value; render(); });
+  });
+
+  function render(){
+    var m=MODEL[st.m], v=VOICE[st.v];
+    var sc=[
+      {n:"Read + summary",parts:[["k-cat",CAT],["k-sum",m.sum]]},
+      {n:"Listen to summary",parts:[["k-cat",CAT],["k-sum",m.sum],["k-v",v.s]]},
+      {n:"Listen to full article",parts:[["k-cat",CAT],["k-sum",m.sum],["k-tr",m.tr],["k-v",v.f]]}
+    ];
+    var tot=sc.map(function(s){return s.parts.reduce(function(a,p){return a+p[1]},0)});
+    var max=Math.max.apply(null,tot)||1;
+    $("scen").innerHTML=sc.map(function(s,i){
+      return '<div class="sc"><div class="sc-top"><span>'+s.n+'</span><span class="mono">'+fmt(tot[i])+'</span></div><div class="track">'+
+        s.parts.map(function(p){return '<span class="'+p[0]+'" style="width:'+(p[1]/max*100)+'%"></span>'}).join("")+'</div></div>';
+    }).join("");
+
+    var saved=+$("r-saved").value, ls=+$("r-sum").value, lf=+$("r-full").value;
+    var tv=VOICE[TIER[st.t].v];
+    var ai=saved*(CAT+m.sum)+ls*tv.s+lf*(m.tr+tv.f);
+    var exVat=st.p/(1+st.vat), vat=st.p-exVat, apple=exVat*.15, net=exVat-apple, mar=net-ai;
+    var cap=Math.floor((net-saved*(CAT+m.sum)-ls*tv.s)/(m.tr+tv.f));
+    $("cap").textContent=cap>0?"Full listens before this user costs more than they pay: "+cap+" / month":"Loses money before any full listen";
+    var parts=[["k-vat",vat],["k-apple",apple],["k-ai",Math.min(ai,net)],["k-mar",Math.max(mar,0)]];
+    var whole=Math.max(st.p, vat+apple+ai);
+    $("split").innerHTML=parts.map(function(p){return '<span class="'+p[0]+'" style="width:'+(p[1]/whole*100)+'%"></span>'}).join("");
+    $("b-ai").textContent=fmt(ai);
+    var bm=$("b-mar"); bm.textContent=fmt(mar); bm.classList.toggle("neg",mar<0);
+    $("b-be").textContent=mar>0?Math.ceil(30/mar):"∞";
+  }
+  render();
+
+  var fb=document.querySelector(".filter");
+  fb.addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    fb.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});
+    document.querySelectorAll("#cards .card").forEach(function(c){c.hidden=!(b.dataset.f==="all"||c.dataset.s===b.dataset.f)});
+  });
+})();
+</script>

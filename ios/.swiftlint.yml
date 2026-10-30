@@ -1,0 +1,16 @@
+included:
+  - Later
+  - Project.swift
+  - Tuist.swift
+opt_in_rules:
+  - empty_count
+  - first_where
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - sorted_imports
+analyzer_rules:
+  - unused_declaration
+  - unused_import
+# Matches SwiftFormat, which keeps trailing commas in multiline collections.
+trailing_comma:
+  mandatory_comma: true

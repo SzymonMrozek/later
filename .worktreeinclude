@@ -1,0 +1,3 @@
+# Build caches copied into new worktrees by `wt step copy-ignored` (copy-on-write on APFS).
+server/deps/
+server/_build/
