@@ -70,7 +70,7 @@ PY
     udid="${udid:-$(worktree_udid)}"
     xcodebuild_app build
     boot
-    open -a Simulator --args -CurrentDeviceUDID "$udid"
+    open "devices:///manage/select?id=$udid"  # Xcode 27 shows simulators through this URL, like local-review
     xcrun simctl install "$udid" "$derived_data/Build/Products/Debug-iphonesimulator/Later.app"
     xcrun simctl launch "$udid" "$bundle_id"
     ;;
