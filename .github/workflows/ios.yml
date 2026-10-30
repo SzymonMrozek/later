@@ -1,6 +1,7 @@
 name: ios
 
 on:
+  workflow_dispatch:
   pull_request:
     paths: ["ios/**", "scripts/ios.sh", "mise.toml", ".github/workflows/ios.yml"]
   push:
