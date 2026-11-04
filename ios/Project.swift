@@ -20,6 +20,16 @@ let utilities: [Module] = [
         implementationTests: .with(["HTTPNetworkingInterface"])
     ),
     .split("Keychain", group: .utilities, implementation: ["DependencyInjection"]),
+    .split(
+        "SessionStorage",
+        group: .utilities,
+        interface: ["Session"],
+        implementation: ["Account", "DependencyInjection", "KeychainInterface", "Session"],
+        implementationTests: .with([
+            "Account", "DependencyInjection", "DependencyInjectionTestSupport", "KeychainInterface", "Session",
+            "SessionStorageInterface",
+        ])
+    ),
 ]
 
 let models: [Module] = [
