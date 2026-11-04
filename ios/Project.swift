@@ -114,6 +114,13 @@ let designSystem: [Module] = [
         group: "DesignSystem",
         dependencies: ["LaterColor", "LaterGlass", "LaterSize", "LaterSpacing", "LaterTypography"]
     ),
+    Module(
+        "LaterMiniPlayer",
+        group: "DesignSystem",
+        dependencies: [
+            "LaterArticleThumb", "LaterColor", "LaterGlass", "LaterSize", "LaterSpacing", "LaterTypography",
+        ]
+    ),
 ]
 
 let modules = designSystem
