@@ -19,6 +19,10 @@ label = "Migration"
 [[modules]]
 pattern = '^(?<group>server)/lib/(?<name>later_web|later)/(?:(?<target>[^/]+)/)?.'
 
+# ios/Modules/<layer>/<Module>/, split into Interface and Implementation or with Sources directly.
+[[modules]]
+pattern = '^(?<group>ios)/Modules/[^/]+/(?<name>[^/]+)/(?:(?<target>Interface|Implementation|Sources|Tests|Resources)/)?.'
+
 [[modules]]
 pattern = '^(?<group>ios)/(?<name>[^/]+)/(?:(?<target>Sources|Tests|Resources)/)?.'
 
