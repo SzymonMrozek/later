@@ -38,6 +38,7 @@ let utilities: [Module] = [
             "DependencyInjection", "DependencyInjectionTestSupport", "DeviceIDInterface", "KeychainInterface",
         ])
     ),
+    .split("AppleSignIn", group: .utilities, implementation: ["DependencyInjection"]),
 ]
 
 let models: [Module] = [
