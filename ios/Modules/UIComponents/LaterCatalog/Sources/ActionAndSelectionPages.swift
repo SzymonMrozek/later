@@ -36,6 +36,10 @@ struct ButtonPage: View {
         Specimen(label: "Quiet") { LaterButton("Try without an account", variant: .quiet) {} }
         Specimen(label: "Destructive") { LaterButton("Delete account and data", variant: .destructive) {} }
         Specimen(label: "Disabled") { LaterButton("Listen · 19 min") {}.disabled(true) }
+        Specimen(label: "Loading") {
+            LaterButton("Continue with Apple", systemImage: "apple.logo", variant: .ink, isLoading: true) {}
+            LaterButton("Try without an account", variant: .quiet, isLoading: true) {}
+        }
     }
 }
 

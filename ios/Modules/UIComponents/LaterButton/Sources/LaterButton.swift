@@ -9,29 +9,47 @@ public struct LaterButton: View {
     private let title: String
     private let systemImage: String?
     private let variant: LaterButtonStyle.Variant
+    private let isLoading: Bool
     private let action: () -> Void
 
+    /// - Parameters:
+    ///   - isLoading: Shows a spinner in place of the title while the action's work runs. Disable the
+    ///     button too if a second tap must not start it again.
     public init(
         _ title: String,
         systemImage: String? = nil,
         variant: LaterButtonStyle.Variant = .primary,
+        isLoading: Bool = false,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.systemImage = systemImage
         self.variant = variant
+        self.isLoading = isLoading
         self.action = action
     }
 
     public var body: some View {
         Button(action: action) {
-            if let systemImage {
-                Label(title, systemImage: systemImage)
-            } else {
-                Text(title)
-            }
+            label
+                .opacity(isLoading ? 0 : 1)
+                .overlay {
+                    if isLoading {
+                        ProgressView()
+                    }
+                }
         }
         .buttonStyle(LaterButtonStyle(variant))
+        .accessibilityLabel(Text(title))
+        .accessibilityValue(isLoading ? Text("In progress") : Text(verbatim: ""))
+    }
+
+    @ViewBuilder private var label: some View {
+        if let systemImage {
+            Label(title, systemImage: systemImage)
+        } else {
+            Text(title)
+        }
     }
 }
 
@@ -59,6 +77,7 @@ public struct LaterButtonStyle: ButtonStyle {
         configuration.label
             .font(font)
             .foregroundStyle(foreground)
+            .tint(foreground)
             .padding(.horizontal, LaterSpacing.five)
             .frame(maxWidth: variant == .destructive ? nil : .infinity, minHeight: minHeight)
             .background(background, in: Capsule())
