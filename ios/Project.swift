@@ -48,6 +48,13 @@ let designSystem: [Module] = [
         group: "DesignSystem",
         dependencies: ["LaterColor", "LaterRadius", "LaterSpacing", "LaterStroke", "LaterTypography"]
     ),
+
+    // Forms and lists
+    Module(
+        "LaterTextField",
+        group: "DesignSystem",
+        dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterTypography"]
+    ),
 ]
 
 let modules = designSystem
