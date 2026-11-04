@@ -18,6 +18,8 @@ done
 bundle_id="dev.mrozek.later"
 derived_data=".build/ios"
 worktree_simulator="tools/pitcrew/worktree-simulator/worktree_simulator.py"
+# The app talks to this worktree's Phoenix server (`mise run server:dev`); Project.swift bakes it into Info.plist.
+export TUIST_LATER_API_BASE_URL="http://localhost:${PORT:-4000}"
 
 # Reuses the device recorded for this worktree; the primary worktree gets one on first use.
 worktree_udid() {

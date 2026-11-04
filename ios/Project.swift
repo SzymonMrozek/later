@@ -39,6 +39,21 @@ let utilities: [Module] = [
         ])
     ),
     .split("AppleSignIn", group: .utilities, implementation: ["DependencyInjection"]),
+    // The composition root: the only module that selects implementations.
+    .standalone(
+        "AppComposition",
+        group: .utilities,
+        dependencies: [
+            "AppleSignInImplementation", "AuthenticationImplementation", "AuthenticationInterface", "Coordinator",
+            "DependencyInjection", "DeviceIDImplementation", "HTTPNetworkingImplementation", "KeychainImplementation",
+            "LaterCatalog", "LoginImplementation", "LoginInterface", "SessionResourceImplementation",
+            "SessionStorageImplementation",
+        ],
+        tests: .with([
+            "Account", "AuthenticationInterface", "Coordinator", "DependencyInjection",
+            "DependencyInjectionTestSupport", "LoginInterface",
+        ])
+    ),
 ]
 
 let models: [Module] = [
@@ -270,28 +285,25 @@ let project = Project(
                 "UILaunchScreen": [:],
                 // Articles keep playing with the screen locked.
                 "UIBackgroundModes": ["audio"],
+                // Read by BuildConfiguration. scripts/ios.sh points it at this worktree's server.
+                "LaterAPIBaseURL": "$(LATER_API_BASE_URL)",
+                // The development server runs on localhost over plain HTTP.
+                "NSAppTransportSecurity": ["NSAllowsLocalNetworking": true],
             ]),
             sources: ["Later/Sources/**"],
             resources: ["Later/Resources/**"],
-            dependencies: [.target(name: "LaterCatalog")]
-        ),
-        .target(
-            name: "LaterTests",
-            destinations: .iOS,
-            product: .unitTests,
-            bundleId: "dev.mrozek.later.tests",
-            deploymentTargets: deploymentTargets,
-            sources: ["Later/Tests/**"],
-            dependencies: [.target(name: "Later")]
+            entitlements: "Later/Later.entitlements",
+            dependencies: [.target(name: "AppComposition")],
+            settings: .settings(base: [
+                "LATER_API_BASE_URL": .string(Environment.laterApiBaseUrl.getString(default: "http://localhost:4000")),
+            ])
         ),
     ] + modules.flatMap(\.targets),
     schemes: [
         .scheme(
             name: "Later",
             buildAction: .buildAction(targets: ["Later"]),
-            testAction: .targets(
-                (["LaterTests"] + modules.flatMap(\.testTargetNames)).map { .testableTarget(target: .target($0)) }
-            ),
+            testAction: .targets(modules.flatMap(\.testTargetNames).map { .testableTarget(target: .target($0)) }),
             runAction: .runAction(executable: "Later")
         ),
     ]

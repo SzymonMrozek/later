@@ -15,7 +15,7 @@ Components   each imports only the tokens it uses (see Project.swift), and these
              LaterMiniPlayer ──▶ LaterArticleThumb · LaterGlass
              LaterNavBar     ──▶ LaterIconButton
 
-Review       LaterCatalog ──▶ everything; the app opens on it until the first flow lands
+Review       LaterCatalog ──▶ everything; the app shows it after sign-in until the first signed-in scene lands
 ```
 
 | Canvas | Swift |

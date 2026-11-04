@@ -47,9 +47,9 @@ dir = "server"
 run = "mix lint"
 
 [tasks."ios:generate"]
-description = "Generate the Xcode workspace with Tuist."
+description = "Generate the Xcode workspace with Tuist, pointing the app at this worktree's server."
 dir = "ios"
-run = "tuist generate --no-open"
+run = 'TUIST_LATER_API_BASE_URL="http://localhost:${PORT:-4000}" tuist generate --no-open'
 
 [tasks."ios:build"]
 description = "Build the app for this worktree's simulator."
