@@ -42,6 +42,6 @@ Review       LaterCatalog ──▶ everything; the app opens on it until the fi
 
 ## Adding a module
 
-Add a `Module(...)` to `designSystem` in [`Project.swift`](../../Project.swift) with the modules it
-imports, put its code in `Modules/DesignSystem/<Name>/Sources` (and `Tests`, `Resources` if it has
+Add a `.standalone(...)` to `uiComponents` in [`Project.swift`](../../Project.swift) with the modules it
+imports, put its code in `Modules/UIComponents/<Name>/Sources` (and `Tests`, `Resources` if it has
 them), show it on a [`LaterCatalog`](LaterCatalog/Sources) page, and run `mise run ios:generate`.

@@ -122,7 +122,7 @@ enum ComponentPage: String, CaseIterable, Identifiable {
         }
     }
 
-    @MainActor @ViewBuilder var content: some View {
+    @ViewBuilder var content: some View {
         switch self {
         case .button: ButtonPage()
         case .iconButton: IconButtonPage()

@@ -30,7 +30,7 @@ import UIKit
 
 /// A stand-in lead image: a gradient, so glass and images can be judged over content.
 enum PhotoSample {
-    @MainActor static let image: Image = {
+    static let image: Image = {
         let colors = [LaterColor.Accent.queue3, LaterColor.Accent.base, LaterColor.Status.warning]
             .map { UIColor($0).cgColor } as CFArray
         let size = CGSize(width: 400, height: 260)

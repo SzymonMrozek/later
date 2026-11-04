@@ -1,165 +1,182 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-/// The design system from design/Later.canvas: one module per token set and per component family,
-/// so a screen imports only what it draws. See Modules/DesignSystem/README.md for the map.
-let designSystem: [Module] = [
+// The module graph. Modules/README.md explains the groups and the rules; `mise run ios:lint` enforces them.
+
+let utilities: [Module] = []
+
+let models: [Module] = []
+
+let services: [Module] = []
+
+let scenes: [Module] = []
+
+let uiComponents: [Module] = [
     // Tokens
-    Module("LaterColor", group: "DesignSystem", hasTests: true),
-    Module("LaterTypography", group: "DesignSystem", hasResources: true, hasTests: true),
-    Module("LaterSpacing", group: "DesignSystem"),
-    Module("LaterRadius", group: "DesignSystem"),
-    Module("LaterSize", group: "DesignSystem"),
-    Module("LaterStroke", group: "DesignSystem"),
-    Module("LaterShadow", group: "DesignSystem", dependencies: ["LaterColor"]),
-    Module("LaterGlass", group: "DesignSystem", dependencies: ["LaterColor", "LaterShadow", "LaterStroke"]),
+    .standalone("LaterColor", group: .uiComponents, tests: .plain),
+    .standalone("LaterTypography", group: .uiComponents, hasResources: true, tests: .plain),
+    .standalone("LaterSpacing", group: .uiComponents),
+    .standalone("LaterRadius", group: .uiComponents),
+    .standalone("LaterSize", group: .uiComponents),
+    .standalone("LaterStroke", group: .uiComponents),
+    .standalone("LaterShadow", group: .uiComponents, dependencies: ["LaterColor"]),
+    .standalone("LaterGlass", group: .uiComponents, dependencies: ["LaterColor", "LaterShadow", "LaterStroke"]),
 
     // Actions
-    Module(
+    .standalone(
         "LaterButton",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterSize", "LaterSpacing", "LaterTypography"]
     ),
-    Module(
+    .standalone(
         "LaterIconButton",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterGlass", "LaterSize", "LaterTypography"]
     ),
-    Module("LaterWordmark", group: "DesignSystem", dependencies: ["LaterColor", "LaterTypography"]),
+    .standalone("LaterWordmark", group: .uiComponents, dependencies: ["LaterColor", "LaterTypography"]),
 
     // Selection
-    Module(
+    .standalone(
         "LaterChip",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterSpacing", "LaterStroke", "LaterTypography"]
     ),
-    Module(
+    .standalone(
         "LaterSegmentedControl",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterShadow", "LaterSpacing", "LaterTypography"]
     ),
-    Module(
+    .standalone(
         "LaterDurationPicker",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterStroke", "LaterTypography"]
     ),
-    Module(
+    .standalone(
         "LaterOptionCard",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSpacing", "LaterStroke", "LaterTypography"]
     ),
 
     // Forms and lists
-    Module(
+    .standalone(
         "LaterTextField",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterTypography"]
     ),
-    Module("LaterListRow", group: "DesignSystem", dependencies: ["LaterColor", "LaterSpacing", "LaterTypography"]),
-    Module("LaterSectionHeader", group: "DesignSystem", dependencies: ["LaterColor", "LaterTypography"]),
-    Module(
+    .standalone("LaterListRow", group: .uiComponents, dependencies: ["LaterColor", "LaterSpacing", "LaterTypography"]),
+    .standalone("LaterSectionHeader", group: .uiComponents, dependencies: ["LaterColor", "LaterTypography"]),
+    .standalone(
         "LaterComparisonTable",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterStroke", "LaterTypography"]
     ),
 
     // Articles
-    Module(
+    .standalone(
         "LaterSourceIcon",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterTypography"],
-        hasTests: true
+        tests: .plain
     ),
-    Module(
+    .standalone(
         "LaterStatusTag",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSpacing", "LaterTypography"]
     ),
-    Module(
+    .standalone(
         "LaterArticleThumb",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterTypography"]
     ),
-    Module(
+    .standalone(
         "LaterArticleRow",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: [
             "LaterArticleThumb", "LaterColor", "LaterSourceIcon", "LaterSpacing", "LaterStatusTag", "LaterTypography",
         ]
     ),
-    Module(
+    .standalone(
         "LaterQueueRow",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: [
             "LaterArticleThumb", "LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterTypography",
         ]
     ),
-    Module("LaterPrepProgress", group: "DesignSystem", dependencies: ["LaterColor", "LaterSpacing", "LaterTypography"]),
+    .standalone(
+        "LaterPrepProgress",
+        group: .uiComponents,
+        dependencies: ["LaterColor", "LaterSpacing", "LaterTypography"]
+    ),
 
     // Listening
-    Module(
+    .standalone(
         "LaterSessionBar",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing"],
-        hasTests: true
+        tests: .plain
     ),
-    Module(
+    .standalone(
         "LaterScrubber",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterTypography"],
-        hasTests: true
+        tests: .plain
     ),
-    Module(
+    .standalone(
         "LaterPlayerControls",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterGlass", "LaterSize", "LaterSpacing", "LaterTypography"]
     ),
-    Module(
+    .standalone(
         "LaterMiniPlayer",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: [
             "LaterArticleThumb", "LaterColor", "LaterGlass", "LaterSize", "LaterSpacing", "LaterTypography",
         ]
     ),
 
     // Navigation and feedback
-    Module(
+    .standalone(
         "LaterNavBar",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterIconButton", "LaterSize", "LaterTypography"]
     ),
-    Module(
+    .standalone(
         "LaterTabBar",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterGlass", "LaterSpacing", "LaterTypography"]
     ),
-    Module("LaterStepIndicator", group: "DesignSystem", dependencies: ["LaterColor", "LaterSize", "LaterSpacing"]),
-    Module(
+    .standalone("LaterStepIndicator", group: .uiComponents, dependencies: ["LaterColor", "LaterSize", "LaterSpacing"]),
+    .standalone(
         "LaterNotice",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSpacing", "LaterTypography"]
     ),
-    Module(
+    .standalone(
         "LaterSheet",
-        group: "DesignSystem",
+        group: .uiComponents,
         dependencies: ["LaterColor", "LaterRadius", "LaterSpacing", "LaterTypography"]
     ),
+
+    // Design review: every token and component, one page per group or family
+    .standalone("LaterCatalog", group: .uiComponents, dependencies: [
+        "LaterArticleRow", "LaterArticleThumb", "LaterButton", "LaterChip", "LaterColor", "LaterComparisonTable",
+        "LaterDurationPicker", "LaterGlass", "LaterIconButton", "LaterListRow", "LaterMiniPlayer", "LaterNavBar",
+        "LaterNotice", "LaterOptionCard", "LaterPlayerControls", "LaterPrepProgress", "LaterQueueRow", "LaterRadius",
+        "LaterScrubber", "LaterSectionHeader", "LaterSegmentedControl", "LaterSessionBar", "LaterShadow", "LaterSheet",
+        "LaterSize", "LaterSourceIcon", "LaterSpacing", "LaterStatusTag", "LaterStepIndicator", "LaterStroke",
+        "LaterTabBar", "LaterTextField", "LaterTypography", "LaterWordmark",
+    ]),
 ]
 
-/// Every token and component on one screen per family, in light and dark, for design review.
-let catalog = Module(
-    "LaterCatalog",
-    group: "DesignSystem",
-    dependencies: designSystem.map(\.name)
-)
-
-let modules = designSystem + [catalog]
+let modules = utilities + models + services + scenes + uiComponents
 
 let project = Project(
     name: "Later",
     options: .options(automaticSchemesOptions: .disabled),
     settings: .settings(base: [
         "SWIFT_VERSION": "6.0",
+        // Everything runs on the main actor unless a declaration says otherwise.
+        "SWIFT_DEFAULT_ACTOR_ISOLATION": "MainActor",
         "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
     ]),
     targets: [
@@ -177,7 +194,7 @@ let project = Project(
             ]),
             sources: ["Later/Sources/**"],
             resources: ["Later/Resources/**"],
-            dependencies: [.target(name: catalog.name)]
+            dependencies: [.target(name: "LaterCatalog")]
         ),
         .target(
             name: "LaterTests",
@@ -194,8 +211,7 @@ let project = Project(
             name: "Later",
             buildAction: .buildAction(targets: ["Later"]),
             testAction: .targets(
-                (["LaterTests"] + modules.filter(\.hasTests).map(\.testsName))
-                    .map { .testableTarget(target: .target($0)) }
+                (["LaterTests"] + modules.flatMap(\.testTargetNames)).map { .testableTarget(target: .target($0)) }
             ),
             runAction: .runAction(executable: "Later")
         ),

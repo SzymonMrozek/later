@@ -53,8 +53,8 @@ public enum LaterTypography {
         }
     }
 
-    static let uiFamily = "Instrument Sans"
-    static let articleFamily = "Source Serif 4"
+    nonisolated static let uiFamily = "Instrument Sans"
+    nonisolated static let articleFamily = "Source Serif 4"
 }
 
 public extension Font {
