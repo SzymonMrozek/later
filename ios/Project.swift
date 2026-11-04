@@ -24,6 +24,7 @@ let utilities: [Module] = [
 
 let models: [Module] = [
     .standalone("Account", group: .models, tests: .plain),
+    .standalone("Session", group: .models, dependencies: ["Account"]),
 ]
 
 let services: [Module] = []
