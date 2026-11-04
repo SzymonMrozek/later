@@ -8,6 +8,7 @@ let designSystem: [Module] = [
     Module("LaterColor", group: "DesignSystem", hasTests: true),
     Module("LaterTypography", group: "DesignSystem", hasResources: true, hasTests: true),
     Module("LaterSpacing", group: "DesignSystem"),
+    Module("LaterRadius", group: "DesignSystem"),
 ]
 
 let modules = designSystem
