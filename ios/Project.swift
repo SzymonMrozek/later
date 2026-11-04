@@ -7,6 +7,7 @@ let designSystem: [Module] = [
     // Tokens
     Module("LaterColor", group: "DesignSystem", hasTests: true),
     Module("LaterTypography", group: "DesignSystem", hasResources: true, hasTests: true),
+    Module("LaterSpacing", group: "DesignSystem"),
 ]
 
 let modules = designSystem
