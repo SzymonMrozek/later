@@ -55,6 +55,7 @@ let designSystem: [Module] = [
         group: "DesignSystem",
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterTypography"]
     ),
+    Module("LaterListRow", group: "DesignSystem", dependencies: ["LaterColor", "LaterSpacing", "LaterTypography"]),
 ]
 
 let modules = designSystem
