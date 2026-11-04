@@ -3,7 +3,9 @@ import ProjectDescriptionHelpers
 
 // The module graph. Modules/README.md explains the groups and the rules; `mise run ios:lint` enforces them.
 
-let utilities: [Module] = []
+let utilities: [Module] = [
+    .standalone("DependencyInjection", group: .utilities, tests: .plain),
+]
 
 let models: [Module] = []
 
