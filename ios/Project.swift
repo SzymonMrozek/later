@@ -74,7 +74,21 @@ let services: [Module] = [
     ),
 ]
 
-let scenes: [Module] = []
+let scenes: [Module] = [
+    .split(
+        "Login",
+        group: .scenes,
+        interface: ["Coordinator"],
+        implementation: [
+            "Account", "AuthenticationInterface", "Coordinator", "DependencyInjection", "LaterButton", "LaterColor",
+            "LaterNotice", "LaterSpacing", "LaterStepIndicator", "LaterTypography", "LaterWordmark",
+        ],
+        hasResources: true,
+        implementationTests: .with([
+            "Account", "AuthenticationInterface", "DependencyInjection", "DependencyInjectionTestSupport",
+        ])
+    ),
+]
 
 let uiComponents: [Module] = [
     // Tokens
