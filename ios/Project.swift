@@ -30,6 +30,14 @@ let utilities: [Module] = [
             "SessionStorageInterface",
         ])
     ),
+    .split(
+        "DeviceID",
+        group: .utilities,
+        implementation: ["DependencyInjection", "KeychainInterface"],
+        implementationTests: .with([
+            "DependencyInjection", "DependencyInjectionTestSupport", "DeviceIDInterface", "KeychainInterface",
+        ])
+    ),
 ]
 
 let models: [Module] = [
