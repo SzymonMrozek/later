@@ -46,7 +46,19 @@ let models: [Module] = [
     .standalone("Session", group: .models, dependencies: ["Account"]),
 ]
 
-let services: [Module] = []
+let services: [Module] = [
+    // The Later API's session endpoints: requests, responses and their mapping to Session.
+    .split(
+        "SessionResource",
+        group: .services,
+        interface: ["Session"],
+        implementation: ["Account", "DependencyInjection", "HTTPNetworkingInterface", "Session"],
+        implementationTests: .with([
+            "Account", "DependencyInjection", "DependencyInjectionTestSupport", "HTTPNetworkingInterface", "Session",
+            "SessionResourceInterface",
+        ])
+    ),
+]
 
 let scenes: [Module] = []
 
