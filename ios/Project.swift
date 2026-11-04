@@ -25,6 +25,7 @@ let designSystem: [Module] = [
         group: "DesignSystem",
         dependencies: ["LaterColor", "LaterGlass", "LaterSize", "LaterTypography"]
     ),
+    Module("LaterWordmark", group: "DesignSystem", dependencies: ["LaterColor", "LaterTypography"]),
 ]
 
 let modules = designSystem
