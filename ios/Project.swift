@@ -2,7 +2,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 /// The design system from design/Later.canvas: one module per token set and per component family,
-/// so a screen imports only what it draws.
+/// so a screen imports only what it draws. See Modules/DesignSystem/README.md for the map.
 let designSystem: [Module] = [
     // Tokens
     Module("LaterColor", group: "DesignSystem", hasTests: true),
@@ -146,7 +146,14 @@ let designSystem: [Module] = [
     ),
 ]
 
-let modules = designSystem
+/// Every token and component on one screen per family, in light and dark, for design review.
+let catalog = Module(
+    "LaterCatalog",
+    group: "DesignSystem",
+    dependencies: designSystem.map(\.name)
+)
+
+let modules = designSystem + [catalog]
 
 let project = Project(
     name: "Later",
@@ -169,7 +176,8 @@ let project = Project(
                 "UIBackgroundModes": ["audio"],
             ]),
             sources: ["Later/Sources/**"],
-            resources: ["Later/Resources/**"]
+            resources: ["Later/Resources/**"],
+            dependencies: [.target(name: catalog.name)]
         ),
         .target(
             name: "LaterTests",

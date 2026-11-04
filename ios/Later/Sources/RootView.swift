@@ -1,14 +1,10 @@
+import LaterCatalog
 import SwiftUI
 
+/// Until the first flows land, the app opens on the design system catalog for review.
 struct RootView: View {
     var body: some View {
-        VStack(spacing: 12) {
-            Text(RootView.title)
-                .font(.largeTitle.weight(.semibold))
-            Text("Ile masz czasu?")
-                .foregroundStyle(.secondary)
-        }
-        .padding()
+        LaterCatalogView()
     }
 
     static let title = "Later"

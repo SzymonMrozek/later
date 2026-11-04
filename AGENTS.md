@@ -11,7 +11,7 @@ or names from other private projects. Secrets come from the environment at runti
 
 | Path | What |
 | --- | --- |
-| `ios/` | Tuist project (`Project.swift`). Sources in `ios/Later/Sources`, tests in `ios/Later/Tests`. |
+| `ios/` | Tuist project (`Project.swift`). App target in `ios/Later`; focused modules in `ios/Modules`, starting with the design system (`ios/Modules/DesignSystem/README.md`). |
 | `server/` | Phoenix JSON API, Ecto + Postgres, Oban jobs. See `server/AGENTS.md` for Phoenix rules. |
 | `docs/` | Product concept, design concept, architecture maps (`docs/maps.html`). |
 | `scripts/` | Worktree hooks, iOS build/run, merge checks. |
