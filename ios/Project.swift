@@ -121,6 +121,13 @@ let designSystem: [Module] = [
             "LaterArticleThumb", "LaterColor", "LaterGlass", "LaterSize", "LaterSpacing", "LaterTypography",
         ]
     ),
+
+    // Navigation and feedback
+    Module(
+        "LaterNavBar",
+        group: "DesignSystem",
+        dependencies: ["LaterColor", "LaterIconButton", "LaterSize", "LaterTypography"]
+    ),
 ]
 
 let modules = designSystem
