@@ -33,6 +33,11 @@ let designSystem: [Module] = [
         group: "DesignSystem",
         dependencies: ["LaterColor", "LaterSpacing", "LaterStroke", "LaterTypography"]
     ),
+    Module(
+        "LaterSegmentedControl",
+        group: "DesignSystem",
+        dependencies: ["LaterColor", "LaterShadow", "LaterSpacing", "LaterTypography"]
+    ),
 ]
 
 let modules = designSystem
