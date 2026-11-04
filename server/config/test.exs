@@ -24,6 +24,10 @@ config :later, LaterWeb.Endpoint,
 # Tests insert jobs without running them; assert or drain with Oban.Testing.
 config :later, Oban, testing: :manual
 
+# Apple's keys come from a test key pair; the HTTP fetch itself is stubbed with Req.Test.
+config :later, :apple_keys, Later.AppleKeysStub
+config :later, :apple_keys_req_options, plug: {Req.Test, Later.Accounts.AppleKeys}, retry: false
+
 # Print only warnings and errors during test
 config :logger, level: :warning
 

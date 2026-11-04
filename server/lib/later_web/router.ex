@@ -9,5 +9,8 @@ defmodule LaterWeb.Router do
     pipe_through :api
 
     get "/health", HealthController, :show
+
+    post "/sessions/guest", SessionController, :guest
+    post "/sessions/apple", SessionController, :apple
   end
 end

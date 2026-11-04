@@ -20,7 +20,7 @@ defmodule Later.MixProject do
   def application do
     [
       mod: {Later.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :crypto, :public_key]
     ]
   end
 

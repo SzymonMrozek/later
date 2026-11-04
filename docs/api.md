@@ -47,7 +47,9 @@ Sign in with Apple.
 `given_name`, `family_name` and `email` are sent only on the first sign-in, and only if the person
 shared them. The server verifies `identity_token` against Apple's keys and this app's bundle ID
 (`dev.mrozek.later`), and identifies the person by its `sub`. If `device_id` has a guest account,
-the Apple account takes over its library.
+the Apple account takes over its library,
+and a later guest sign-in on that device starts a new guest. The token's `email` claim wins over
+the `email` the app sends.
 
 ## Errors
 
@@ -56,4 +58,8 @@ the Apple account takes over its library.
 | 2xx | Success | |
 | 401 | Apple's token didn't verify | "Couldn't sign you in" |
 | 422 | Missing or invalid fields | "Couldn't sign you in" |
+| 503 | Apple's keys couldn't be fetched | "Couldn't sign you in" |
 | No response | Server unreachable | "You're offline" |
+
+Error bodies are `{ "errors": { "detail": "Unauthorized" } }`, or for 422 the invalid fields:
+`{ "errors": { "device_id": ["can't be blank"] } }`.

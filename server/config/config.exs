@@ -11,6 +11,9 @@ config :later,
   ecto_repos: [Later.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
+# Sign in with Apple identity tokens must be issued for this bundle ID.
+config :later, :apple_bundle_id, "dev.mrozek.later"
+
 # Configure the endpoint
 config :later, LaterWeb.Endpoint,
   url: [host: "localhost"],
