@@ -109,6 +109,11 @@ let designSystem: [Module] = [
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterTypography"],
         hasTests: true
     ),
+    Module(
+        "LaterPlayerControls",
+        group: "DesignSystem",
+        dependencies: ["LaterColor", "LaterGlass", "LaterSize", "LaterSpacing", "LaterTypography"]
+    ),
 ]
 
 let modules = designSystem
