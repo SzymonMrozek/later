@@ -5,6 +5,12 @@ import ProjectDescriptionHelpers
 
 let utilities: [Module] = [
     .standalone("DependencyInjection", group: .utilities, tests: .plain),
+    .standalone(
+        "DependencyInjectionTestSupport",
+        group: .utilities,
+        dependencies: ["DependencyInjection"],
+        isTestSupport: true
+    ),
 ]
 
 let models: [Module] = []
