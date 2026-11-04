@@ -95,6 +95,14 @@ let designSystem: [Module] = [
         ]
     ),
     Module("LaterPrepProgress", group: "DesignSystem", dependencies: ["LaterColor", "LaterSpacing", "LaterTypography"]),
+
+    // Listening
+    Module(
+        "LaterSessionBar",
+        group: "DesignSystem",
+        dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing"],
+        hasTests: true
+    ),
 ]
 
 let modules = designSystem
