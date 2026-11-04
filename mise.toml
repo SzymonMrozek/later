@@ -64,12 +64,13 @@ description = "Build, install and launch the app on this worktree's simulator."
 run = "scripts/ios.sh run"
 
 [tasks."ios:lint"]
-description = "SwiftLint, SwiftFormat in check mode, and every module import declared in Project.swift."
+description = "SwiftLint, SwiftFormat in check mode, and the module graph: imports declared, edges allowed."
 dir = "ios"
 run = '''
 swiftlint lint --strict --quiet
 swiftformat --lint .
 tuist inspect dependencies
+python3 -I ../scripts/ios-module-rules.py
 '''
 
 [tasks.lint]
