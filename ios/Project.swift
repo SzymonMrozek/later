@@ -19,6 +19,7 @@ let utilities: [Module] = [
         implementation: ["BuildConfiguration", "DependencyInjection"],
         implementationTests: .with(["HTTPNetworkingInterface"])
     ),
+    .split("Keychain", group: .utilities, implementation: ["DependencyInjection"]),
 ]
 
 let models: [Module] = []
