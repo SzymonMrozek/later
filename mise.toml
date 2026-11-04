@@ -64,11 +64,12 @@ description = "Build, install and launch the app on this worktree's simulator."
 run = "scripts/ios.sh run"
 
 [tasks."ios:lint"]
-description = "SwiftLint and SwiftFormat in check mode."
+description = "SwiftLint, SwiftFormat in check mode, and every module import declared in Project.swift."
 dir = "ios"
 run = '''
 swiftlint lint --strict --quiet
 swiftformat --lint .
+tuist inspect dependencies
 '''
 
 [tasks.lint]

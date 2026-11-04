@@ -1,7 +1,9 @@
 included:
   - Later
+  - Modules
   - Project.swift
   - Tuist.swift
+  - Tuist
 opt_in_rules:
   - empty_count
   - first_where
@@ -14,3 +16,33 @@ analyzer_rules:
 # Matches SwiftFormat, which keeps trailing commas in multiline collections.
 trailing_comma:
   mandatory_comma: true
+# Token names follow design/Later.canvas: color.ground.bg, radius.xs, type.ui.*.
+identifier_name:
+  excluded:
+    - bg
+    - h1
+    - h2
+    - id
+    - lg
+    - md
+    - on
+    - sm
+    - xs
+    - y
+type_name:
+  excluded:
+    - UI
+# Colors and fonts come from the design system's token modules, never from raw values.
+custom_rules:
+  later_raw_color:
+    name: Raw color
+    regex: '(Color|UIColor)\((red|white|hue|displayP3|\.sRGB)|#colorLiteral|Color\.(red|blue|green|orange|yellow|pink|purple|gray|black|white)\b'
+    excluded: 'Modules/DesignSystem/LaterColor/'
+    message: Use a LaterColor token.
+    severity: error
+  later_raw_font:
+    name: Raw font
+    regex: '(Font\.(system|custom)\(|\.font\(\.(system|largeTitle|title|title2|title3|headline|subheadline|body|callout|footnote|caption|caption2)\b)'
+    excluded: 'Modules/DesignSystem/LaterTypography/'
+    message: Use Font.laterUI or Font.laterArticle.
+    severity: error

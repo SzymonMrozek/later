@@ -1,9 +1,15 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let deploymentTargets: DeploymentTargets = .iOS("17.0")
+/// The design system from design/Later.canvas: one module per token set and per component family,
+/// so a screen imports only what it draws.
+let designSystem: [Module] = []
+
+let modules = designSystem
 
 let project = Project(
     name: "Later",
+    options: .options(automaticSchemesOptions: .disabled),
     settings: .settings(base: [
         "SWIFT_VERSION": "6.0",
         "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
@@ -32,6 +38,17 @@ let project = Project(
             deploymentTargets: deploymentTargets,
             sources: ["Later/Tests/**"],
             dependencies: [.target(name: "Later")]
+        ),
+    ] + modules.flatMap(\.targets),
+    schemes: [
+        .scheme(
+            name: "Later",
+            buildAction: .buildAction(targets: ["Later"]),
+            testAction: .targets(
+                (["LaterTests"] + modules.filter(\.hasTests).map(\.testsName))
+                    .map { .testableTarget(target: .target($0)) }
+            ),
+            runAction: .runAction(executable: "Later")
         ),
     ]
 )
