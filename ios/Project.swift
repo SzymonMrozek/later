@@ -103,6 +103,12 @@ let designSystem: [Module] = [
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing"],
         hasTests: true
     ),
+    Module(
+        "LaterScrubber",
+        group: "DesignSystem",
+        dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterTypography"],
+        hasTests: true
+    ),
 ]
 
 let modules = designSystem
