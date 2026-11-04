@@ -13,6 +13,12 @@ let utilities: [Module] = [
     ),
     .standalone("Coordinator", group: .utilities),
     .standalone("BuildConfiguration", group: .utilities, tests: .plain),
+    .split(
+        "HTTPNetworking",
+        group: .utilities,
+        implementation: ["BuildConfiguration", "DependencyInjection"],
+        implementationTests: .with(["HTTPNetworkingInterface"])
+    ),
 ]
 
 let models: [Module] = []
