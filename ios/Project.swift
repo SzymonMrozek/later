@@ -94,6 +94,7 @@ let designSystem: [Module] = [
             "LaterArticleThumb", "LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterTypography",
         ]
     ),
+    Module("LaterPrepProgress", group: "DesignSystem", dependencies: ["LaterColor", "LaterSpacing", "LaterTypography"]),
 ]
 
 let modules = designSystem
