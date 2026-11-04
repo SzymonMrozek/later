@@ -10,6 +10,7 @@ let designSystem: [Module] = [
     Module("LaterSpacing", group: "DesignSystem"),
     Module("LaterRadius", group: "DesignSystem"),
     Module("LaterSize", group: "DesignSystem"),
+    Module("LaterStroke", group: "DesignSystem"),
 ]
 
 let modules = designSystem
