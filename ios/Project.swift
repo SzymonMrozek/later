@@ -22,7 +22,9 @@ let utilities: [Module] = [
     .split("Keychain", group: .utilities, implementation: ["DependencyInjection"]),
 ]
 
-let models: [Module] = []
+let models: [Module] = [
+    .standalone("Account", group: .models, tests: .plain),
+]
 
 let services: [Module] = []
 
