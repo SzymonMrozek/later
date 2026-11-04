@@ -13,6 +13,13 @@ let designSystem: [Module] = [
     Module("LaterStroke", group: "DesignSystem"),
     Module("LaterShadow", group: "DesignSystem", dependencies: ["LaterColor"]),
     Module("LaterGlass", group: "DesignSystem", dependencies: ["LaterColor", "LaterShadow", "LaterStroke"]),
+
+    // Actions
+    Module(
+        "LaterButton",
+        group: "DesignSystem",
+        dependencies: ["LaterColor", "LaterSize", "LaterSpacing", "LaterTypography"]
+    ),
 ]
 
 let modules = designSystem
