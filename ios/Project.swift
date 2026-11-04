@@ -62,6 +62,14 @@ let designSystem: [Module] = [
         group: "DesignSystem",
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterStroke", "LaterTypography"]
     ),
+
+    // Articles
+    Module(
+        "LaterSourceIcon",
+        group: "DesignSystem",
+        dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterTypography"],
+        hasTests: true
+    ),
 ]
 
 let modules = designSystem
