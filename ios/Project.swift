@@ -87,6 +87,13 @@ let designSystem: [Module] = [
             "LaterArticleThumb", "LaterColor", "LaterSourceIcon", "LaterSpacing", "LaterStatusTag", "LaterTypography",
         ]
     ),
+    Module(
+        "LaterQueueRow",
+        group: "DesignSystem",
+        dependencies: [
+            "LaterArticleThumb", "LaterColor", "LaterRadius", "LaterSize", "LaterSpacing", "LaterTypography",
+        ]
+    ),
 ]
 
 let modules = designSystem
