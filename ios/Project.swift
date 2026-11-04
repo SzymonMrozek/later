@@ -12,6 +12,7 @@ let utilities: [Module] = [
         isTestSupport: true
     ),
     .standalone("Coordinator", group: .utilities),
+    .standalone("BuildConfiguration", group: .utilities, tests: .plain),
 ]
 
 let models: [Module] = []
