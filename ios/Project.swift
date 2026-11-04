@@ -58,6 +58,20 @@ let services: [Module] = [
             "SessionResourceInterface",
         ])
     ),
+    .split(
+        "Authentication",
+        group: .services,
+        interface: ["Account"],
+        implementation: [
+            "Account", "AppleSignInInterface", "DependencyInjection", "DeviceIDInterface", "Session",
+            "SessionResourceInterface", "SessionStorageInterface",
+        ],
+        implementationTests: .with([
+            "Account", "AppleSignInInterface", "AuthenticationInterface", "DependencyInjection",
+            "DependencyInjectionTestSupport", "DeviceIDInterface", "Session", "SessionResourceInterface",
+            "SessionStorageInterface",
+        ])
+    ),
 ]
 
 let scenes: [Module] = []
