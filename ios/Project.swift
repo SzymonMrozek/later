@@ -3,7 +3,10 @@ import ProjectDescriptionHelpers
 
 /// The design system from design/Later.canvas: one module per token set and per component family,
 /// so a screen imports only what it draws.
-let designSystem: [Module] = []
+let designSystem: [Module] = [
+    // Tokens
+    Module("LaterColor", group: "DesignSystem", hasTests: true),
+]
 
 let modules = designSystem
 
