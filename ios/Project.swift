@@ -70,6 +70,11 @@ let designSystem: [Module] = [
         dependencies: ["LaterColor", "LaterRadius", "LaterSize", "LaterTypography"],
         hasTests: true
     ),
+    Module(
+        "LaterStatusTag",
+        group: "DesignSystem",
+        dependencies: ["LaterColor", "LaterRadius", "LaterSpacing", "LaterTypography"]
+    ),
 ]
 
 let modules = designSystem
