@@ -11,6 +11,7 @@ let utilities: [Module] = [
         dependencies: ["DependencyInjection"],
         isTestSupport: true
     ),
+    .standalone("Coordinator", group: .utilities),
 ]
 
 let models: [Module] = []
