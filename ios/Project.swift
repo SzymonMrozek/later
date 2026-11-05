@@ -39,15 +39,21 @@ let utilities: [Module] = [
         ])
     ),
     .split("AppleSignIn", group: .utilities, implementation: ["DependencyInjection"]),
+    .split(
+        "BackgroundTask",
+        group: .utilities,
+        implementation: ["DependencyInjection"],
+        implementationTests: .plain
+    ),
     // The composition root: the only module that selects implementations.
     .standalone(
         "AppComposition",
         group: .utilities,
         dependencies: [
-            "AppleSignInImplementation", "AuthenticationImplementation", "AuthenticationInterface", "Coordinator",
-            "DependencyInjection", "DeviceIDImplementation", "HTTPNetworkingImplementation", "KeychainImplementation",
-            "LaterCatalog", "LoginImplementation", "LoginInterface", "SessionResourceImplementation",
-            "SessionStorageImplementation",
+            "AppleSignInImplementation", "AuthenticationImplementation", "AuthenticationInterface",
+            "BackgroundTaskImplementation", "Coordinator", "DependencyInjection", "DeviceIDImplementation",
+            "HTTPNetworkingImplementation", "KeychainImplementation", "LaterCatalog", "LoginImplementation",
+            "LoginInterface", "SessionResourceImplementation", "SessionStorageImplementation",
         ],
         tests: .with([
             "Account", "AuthenticationInterface", "Coordinator", "DependencyInjection",
@@ -78,13 +84,13 @@ let services: [Module] = [
         group: .services,
         interface: ["Account"],
         implementation: [
-            "Account", "AppleSignInInterface", "DependencyInjection", "DeviceIDInterface", "Session",
-            "SessionResourceInterface", "SessionStorageInterface",
+            "Account", "AppleSignInInterface", "BackgroundTaskInterface", "DependencyInjection", "DeviceIDInterface",
+            "Session", "SessionResourceInterface", "SessionStorageInterface",
         ],
         implementationTests: .with([
-            "Account", "AppleSignInInterface", "AuthenticationInterface", "DependencyInjection",
-            "DependencyInjectionTestSupport", "DeviceIDInterface", "Session", "SessionResourceInterface",
-            "SessionStorageInterface",
+            "Account", "AppleSignInInterface", "AuthenticationInterface", "BackgroundTaskInterface",
+            "DependencyInjection", "DependencyInjectionTestSupport", "DeviceIDInterface", "Session",
+            "SessionResourceInterface", "SessionStorageInterface",
         ])
     ),
 ]

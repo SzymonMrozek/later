@@ -11,9 +11,9 @@ import Testing
 @Suite(.dependencyContainer)
 struct KeychainSessionStorageTests {
     @Test(arguments: [
-        Session(token: "t1", account: Account(id: .init(rawValue: "a1"), kind: .guest)),
-        Session(token: "t2", account: Account(id: .init(rawValue: "a2"), kind: .apple(email: "me@example.com"))),
-        Session(token: "t3", account: Account(id: .init(rawValue: "a3"), kind: .apple(email: nil))),
+        session("1", .guest),
+        session("2", .apple(email: "me@example.com")),
+        session("3", .apple(email: nil)),
     ])
     func keepsASessionAcrossInstances(_ session: Session) throws {
         let keychain = install()
@@ -31,7 +31,7 @@ struct KeychainSessionStorageTests {
     @Test func storingNilRemovesTheSession() throws {
         let keychain = install()
         let storage = KeychainSessionStorage()
-        try storage.store(Session(token: "t", account: Account(id: .init(rawValue: "a"), kind: .guest)))
+        try storage.store(session("1", .guest))
 
         try storage.store(nil)
 
@@ -49,11 +49,14 @@ struct KeychainSessionStorageTests {
         let keychain = install()
         keychain.failure = KeychainError(status: -25299)
         #expect(throws: SessionStorageError()) {
-            try KeychainSessionStorage().store(Session(
-                token: "t",
-                account: Account(id: .init(rawValue: "a"), kind: .guest)
-            ))
+            try KeychainSessionStorage().store(session("1", .guest))
         }
+    }
+
+    @Test func ignoresASessionStoredWithoutARefreshToken() {
+        let keychain = install()
+        keychain.items[KeychainSessionStorage.key] = Data(#"{"token":"t","accountID":"a","isGuest":true}"#.utf8)
+        #expect(KeychainSessionStorage().session == nil)
     }
 
     @discardableResult
@@ -62,6 +65,16 @@ struct KeychainSessionStorageTests {
         DependencyInjectionContainer.testScoped.register(.eager(keychain), for: Keychain.self)
         return keychain
     }
+}
+
+private nonisolated func session(_ suffix: String, _ kind: Account.Kind) -> Session {
+    Session(
+        accessToken: "t\(suffix)",
+        refreshToken: "r\(suffix)",
+        // Whole seconds, as the API sends them.
+        expiresAt: Date(timeIntervalSince1970: 1_800_000_000),
+        account: Account(id: .init(rawValue: "a\(suffix)"), kind: kind)
+    )
 }
 
 final class InMemoryKeychain: Keychain {

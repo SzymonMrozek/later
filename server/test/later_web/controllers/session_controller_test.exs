@@ -4,7 +4,7 @@ defmodule LaterWeb.SessionControllerTest do
   import Later.AppleIdentityFixtures
 
   alias Later.Accounts
-  alias Later.Accounts.Account
+  alias Later.Accounts.{Account, SessionToken}
   alias Later.Repo
 
   defp apple_params(overrides \\ %{}) do
@@ -22,10 +22,19 @@ defmodule LaterWeb.SessionControllerTest do
     test "creates a guest account for a new device", %{conn: conn} do
       device_id = Ecto.UUID.generate()
 
-      assert %{"token" => token, "account" => %{"id" => id, "kind" => "guest", "email" => nil}} =
-               conn |> post(~p"/api/sessions/guest", device_id: device_id) |> json_response(200)
+      assert %{
+               "access_token" => token,
+               "refresh_token" => refresh_token,
+               "expires_at" => expires_at,
+               "account" => %{"id" => id, "kind" => "guest", "email" => nil}
+             } = conn |> post(~p"/api/sessions/guest", device_id: device_id) |> json_response(200)
 
       assert %Account{id: ^id, device_id: ^device_id} = Accounts.get_account_by_token(token)
+      assert refresh_token != token
+
+      # The access token lasts an hour.
+      {:ok, expires_at, 0} = DateTime.from_iso8601(expires_at)
+      assert_in_delta DateTime.diff(expires_at, DateTime.utc_now()), 3600, 5
     end
 
     test "returns the same account for the same device", %{conn: conn} do
@@ -37,7 +46,7 @@ defmodule LaterWeb.SessionControllerTest do
         build_conn() |> post(~p"/api/sessions/guest", device_id: device_id) |> json_response(200)
 
       assert first["account"]["id"] == second["account"]["id"]
-      assert first["token"] != second["token"]
+      assert first["access_token"] != second["access_token"]
       assert Repo.aggregate(Account, :count) == 1
     end
 
@@ -60,7 +69,7 @@ defmodule LaterWeb.SessionControllerTest do
         apple_params(%{"identity_token" => token, "given_name" => "Ada", "email" => "x@y.z"})
 
       assert %{
-               "token" => session_token,
+               "access_token" => session_token,
                "account" => %{
                  "id" => id,
                  "kind" => "apple",
@@ -92,7 +101,7 @@ defmodule LaterWeb.SessionControllerTest do
     test "takes over the device's guest account", %{conn: conn} do
       device_id = Ecto.UUID.generate()
 
-      %{"token" => guest_token, "account" => %{"id" => guest_id}} =
+      %{"access_token" => guest_token, "account" => %{"id" => guest_id}} =
         conn |> post(~p"/api/sessions/guest", device_id: device_id) |> json_response(200)
 
       params = apple_params(%{"device_id" => device_id})
@@ -119,7 +128,7 @@ defmodule LaterWeb.SessionControllerTest do
 
       device_id = Ecto.UUID.generate()
 
-      %{"token" => guest_token, "account" => %{"id" => guest_id}} =
+      %{"access_token" => guest_token, "account" => %{"id" => guest_id}} =
         build_conn() |> post(~p"/api/sessions/guest", device_id: device_id) |> json_response(200)
 
       params =
@@ -178,6 +187,79 @@ defmodule LaterWeb.SessionControllerTest do
 
       assert %{"errors" => %{"device_id" => ["is invalid"]}} =
                conn |> post(~p"/api/sessions/apple", params) |> json_response(422)
+    end
+  end
+
+  describe "POST /api/sessions/refresh" do
+    setup %{conn: conn} do
+      session =
+        conn
+        |> post(~p"/api/sessions/guest", device_id: Ecto.UUID.generate())
+        |> json_response(200)
+
+      %{session: session}
+    end
+
+    test "returns new tokens for the same account", %{session: session} do
+      assert %{
+               "access_token" => access_token,
+               "refresh_token" => refresh_token,
+               "expires_at" => _expires_at,
+               "account" => %{"id" => id}
+             } =
+               build_conn()
+               |> post(~p"/api/sessions/refresh", refresh_token: session["refresh_token"])
+               |> json_response(200)
+
+      assert id == session["account"]["id"]
+      assert access_token != session["access_token"]
+      assert refresh_token != session["refresh_token"]
+      assert %Account{id: ^id} = Accounts.get_account_by_token(access_token)
+      refute Accounts.get_account_by_token(session["access_token"])
+      assert Repo.aggregate(SessionToken, :count) == 1
+    end
+
+    test "401 for a refresh token that was already used", %{session: session} do
+      refresh = fn token ->
+        post(build_conn(), ~p"/api/sessions/refresh", refresh_token: token)
+      end
+
+      assert %{"refresh_token" => new_token} =
+               refresh.(session["refresh_token"]) |> json_response(200)
+
+      assert %{"errors" => %{"detail" => "Unauthorized"}} =
+               refresh.(session["refresh_token"]) |> json_response(401)
+
+      assert refresh.(new_token) |> json_response(200)
+    end
+
+    test "401 for an expired refresh token", %{session: session} do
+      Repo.update_all(SessionToken, set: [refresh_expires_at: ~U[2026-01-01 00:00:00Z]])
+
+      assert build_conn()
+             |> post(~p"/api/sessions/refresh", refresh_token: session["refresh_token"])
+             |> json_response(401)
+    end
+
+    test "renews an expired access token", %{session: session} do
+      Repo.update_all(SessionToken, set: [access_expires_at: ~U[2026-01-01 00:00:00Z]])
+      refute Accounts.get_account_by_token(session["access_token"])
+
+      assert %{"access_token" => access_token} =
+               build_conn()
+               |> post(~p"/api/sessions/refresh", refresh_token: session["refresh_token"])
+               |> json_response(200)
+
+      assert Accounts.get_account_by_token(access_token)
+    end
+
+    test "401 for an unknown refresh token", %{conn: conn} do
+      assert conn |> post(~p"/api/sessions/refresh", refresh_token: "nope") |> json_response(401)
+    end
+
+    test "422 without a refresh_token", %{conn: conn} do
+      assert %{"errors" => %{"refresh_token" => ["can't be blank"]}} =
+               conn |> post(~p"/api/sessions/refresh", %{}) |> json_response(422)
     end
   end
 end

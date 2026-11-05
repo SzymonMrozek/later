@@ -11,7 +11,8 @@ defmodule LaterWeb.FallbackController do
     |> render(:error, changeset: changeset)
   end
 
-  def call(conn, {:error, :invalid_identity_token}) do
+  def call(conn, {:error, reason})
+      when reason in [:invalid_identity_token, :invalid_refresh_token] do
     conn
     |> put_status(:unauthorized)
     |> put_view(json: LaterWeb.ErrorJSON)

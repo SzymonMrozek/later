@@ -1,6 +1,7 @@
 defmodule Later.Accounts do
   @moduledoc """
-  Accounts and their sessions: guest accounts per install, Sign in with Apple, bearer tokens.
+  Accounts and their sessions: guest accounts per install, Sign in with Apple, access tokens that
+  expire within the hour and refresh tokens that renew them.
   """
   import Ecto.Changeset
   import Ecto.Query
@@ -11,7 +12,8 @@ defmodule Later.Accounts do
   @doc """
   Signs in as the guest account for `params["device_id"]`, creating it on the first call.
 
-  Returns `{:ok, token, account}` or `{:error, changeset}` for invalid params.
+  Returns `{:ok, tokens, account}` or `{:error, changeset}` for invalid params. `tokens` is
+  `%{access_token:, refresh_token:, expires_at:}`.
   """
   def sign_in_guest(params) do
     with {:ok, %{device_id: device_id}} <- validate(params, [:device_id], [:device_id]) do
@@ -25,7 +27,7 @@ defmodule Later.Accounts do
           returning: true
         )
 
-      {:ok, create_token(account), account}
+      {:ok, create_session(account), account}
     end
   end
 
@@ -33,7 +35,7 @@ defmodule Later.Accounts do
   Signs in with Apple. Verifies `identity_token`, finds or creates the account by Apple's `sub`,
   and takes over the guest account of `device_id` when there is one.
 
-  Returns `{:ok, token, account}`, `{:error, changeset}` for invalid params,
+  Returns `{:ok, tokens, account}`, `{:error, changeset}` for invalid params,
   `{:error, :invalid_identity_token}` or `{:error, :apple_keys_unavailable}`.
   """
   def sign_in_apple(params) do
@@ -46,9 +48,9 @@ defmodule Later.Accounts do
          {:ok, claims} <- AppleIdentity.verify(attrs.identity_token),
          # Apple's own email claim wins over what the app sends.
          profile = Map.put(attrs, :email, claims["email"] || attrs[:email]),
-         {:ok, {token, account}} <-
+         {:ok, {tokens, account}} <-
            Repo.transact(fn -> upsert_apple_account(claims["sub"], attrs.device_id, profile) end) do
-      {:ok, token, account}
+      {:ok, tokens, account}
     end
   end
 
@@ -64,7 +66,7 @@ defmodule Later.Accounts do
       end
 
     with {:ok, account} <- result do
-      {:ok, {create_token(account), account}}
+      {:ok, {create_session(account), account}}
     end
   end
 
@@ -76,22 +78,51 @@ defmodule Later.Accounts do
   end
 
   @doc """
-  Returns the account for a bearer token, or `nil`.
+  Trades `params["refresh_token"]` for new tokens of the same session. The old refresh token and
+  access token stop working.
+
+  Returns `{:ok, tokens, account}`, `{:error, changeset}` for invalid params or
+  `{:error, :invalid_refresh_token}` for an unknown, already used or expired refresh token.
+  """
+  def refresh_session(params) do
+    with {:ok, %{refresh_token: refresh_token}} <-
+           validate(params, [:refresh_token], [:refresh_token]) do
+      now = DateTime.utc_now(:second)
+      {tokens, fields} = SessionToken.issue(now)
+
+      # Matching and replacing the hash in one statement lets only one of two concurrent
+      # refreshes with the same token win.
+      query =
+        from t in SessionToken,
+          where: t.refresh_token_hash == ^SessionToken.hash(refresh_token),
+          where: t.refresh_expires_at > ^now,
+          select: t.account_id
+
+      case Repo.update_all(query, set: [updated_at: now] ++ fields) do
+        {1, [account_id]} -> {:ok, tokens, Repo.get!(Account, account_id)}
+        {0, []} -> {:error, :invalid_refresh_token}
+      end
+    end
+  end
+
+  @doc """
+  Returns the account for an access token that hasn't expired, or `nil`.
   """
   def get_account_by_token(token) when is_binary(token) do
     query =
       from t in SessionToken,
         join: a in assoc(t, :account),
-        where: t.token_hash == ^SessionToken.hash(token),
+        where: t.access_token_hash == ^SessionToken.hash(token),
+        where: t.access_expires_at > ^DateTime.utc_now(:second),
         select: a
 
     Repo.one(query)
   end
 
-  defp create_token(account) do
-    {token, session_token} = SessionToken.build(account)
+  defp create_session(account) do
+    {tokens, session_token} = SessionToken.build(account, DateTime.utc_now(:second))
     Repo.insert!(session_token)
-    token
+    tokens
   end
 
   defp validate(params, fields, required) do
@@ -101,7 +132,8 @@ defmodule Later.Accounts do
       authorization_code: :string,
       given_name: :string,
       family_name: :string,
-      email: :string
+      email: :string,
+      refresh_token: :string
     }
 
     changeset =

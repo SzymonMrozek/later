@@ -1,6 +1,7 @@
 import Account
 import DependencyInjection
 import DependencyInjectionTestSupport
+import Foundation
 import HTTPNetworkingInterface
 import Session
 @testable import SessionResourceImplementation
@@ -9,8 +10,11 @@ import Testing
 
 @Suite(.dependencyContainer)
 struct SessionResourceImplTests {
+    private static let expiresAt = Date(timeIntervalSince1970: 1_800_000_000)
     private let guestResponse = SessionResponse(
-        token: "t1",
+        accessToken: "t1",
+        refreshToken: "r1",
+        expiresAt: expiresAt,
         account: AccountResponse(id: "a1", kind: "guest", email: nil)
     )
 
@@ -19,7 +23,12 @@ struct SessionResourceImplTests {
 
         let session = try await SessionResourceImpl().createGuestSession(deviceID: "d1")
 
-        #expect(session == Session(token: "t1", account: Account(id: .init(rawValue: "a1"), kind: .guest)))
+        #expect(session == Session(
+            accessToken: "t1",
+            refreshToken: "r1",
+            expiresAt: Self.expiresAt,
+            account: Account(id: .init(rawValue: "a1"), kind: .guest)
+        ))
         let request = try #require(http.requests.first)
         #expect(request.method == .post)
         #expect(request.path == "/api/sessions/guest")
@@ -28,7 +37,9 @@ struct SessionResourceImplTests {
 
     @Test func createsAnAppleSessionSendingTheCredentials() async throws {
         let http = install(.success(SessionResponse(
-            token: "t2",
+            accessToken: "t2",
+            refreshToken: "r2",
+            expiresAt: Self.expiresAt,
             account: AccountResponse(id: "a1", kind: "apple", email: "me@example.com")
         )))
         let credentials = AppleSessionCredentials(
@@ -48,6 +59,26 @@ struct SessionResourceImplTests {
         #expect(request.body as? AppleSessionBody == AppleSessionBody(credentials))
     }
 
+    @Test func refreshesASessionSendingTheRefreshToken() async throws {
+        let http = install(.success(guestResponse))
+
+        let session = try await SessionResourceImpl().refreshSession(refreshToken: "r0")
+
+        #expect(session.accessToken == "t1")
+        #expect(session.refreshToken == "r1")
+        let request = try #require(http.requests.first)
+        #expect(request.method == .post)
+        #expect(request.path == "/api/sessions/refresh")
+        #expect(request.body as? RefreshSessionBody == RefreshSessionBody(refreshToken: "r0"))
+    }
+
+    @Test func aRefreshTokenTheAPIRefusesIsRejected() async {
+        install(.failure(.httpStatus(401)))
+        await #expect(throws: SessionResourceError.rejected) {
+            try await SessionResourceImpl().refreshSession(refreshToken: "r0")
+        }
+    }
+
     @Test(arguments: [
         (HTTPNetworkingError.unreachable, SessionResourceError.unreachable),
         (.httpStatus(401), .rejected),
@@ -64,7 +95,25 @@ struct SessionResourceImplTests {
         AccountResponse(id: "", kind: "guest", email: nil),
     ])
     func rejectsAnAccountTheAppCantRead(_ account: AccountResponse) async {
-        install(.success(SessionResponse(token: "t", account: account)))
+        install(.success(SessionResponse(
+            accessToken: "t",
+            refreshToken: "r",
+            expiresAt: Self.expiresAt,
+            account: account
+        )))
+        await #expect(throws: SessionResourceError.invalidResponse) {
+            try await SessionResourceImpl().createGuestSession(deviceID: "d1")
+        }
+    }
+
+    @Test(arguments: [("", "r"), ("t", "")])
+    func rejectsAResponseWithoutTokens(_ accessToken: String, _ refreshToken: String) async {
+        install(.success(SessionResponse(
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            expiresAt: Self.expiresAt,
+            account: AccountResponse(id: "a1", kind: "guest", email: nil)
+        )))
         await #expect(throws: SessionResourceError.invalidResponse) {
             try await SessionResourceImpl().createGuestSession(deviceID: "d1")
         }

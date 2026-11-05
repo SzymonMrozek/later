@@ -3,15 +3,28 @@ import AppleSignInInterface
 import AuthenticationInterface
 import DependencyInjection
 import DeviceIDInterface
+import Foundation
 import Session
 import SessionResourceInterface
 import SessionStorageInterface
 
 final class AuthenticationServiceImpl: AuthenticationService {
+    /// How long before `expiresAt` a session is refreshed, so a request doesn't arrive with a token
+    /// that expired on the way.
+    static let refreshLeeway: TimeInterval = 60
+
     @Dependency private var sessions: SessionResource
     @Dependency private var storage: SessionStorage
     @Dependency private var device: DeviceIDProvider
     @Dependency private var appleSignIn: AppleSignInClient
+
+    private let now: () -> Date
+    private let refresher: SessionRefresher
+
+    init(now: @escaping () -> Date = Date.init, refresher: SessionRefresher = SessionRefresher()) {
+        self.now = now
+        self.refresher = refresher
+    }
 
     var currentAccount: Account? {
         storage.session?.account
@@ -50,6 +63,39 @@ final class AuthenticationServiceImpl: AuthenticationService {
         return try keep(session)
     }
 
+    func authorized<Value, Failure: Error>(
+        _ call: (_ accessToken: String) async throws(Failure) -> Value,
+        isUnauthorized: (Failure) -> Bool
+    ) async throws(AuthorizedCallError<Failure>) -> Value {
+        guard var session = storage.session else {
+            throw .signedOut
+        }
+        if session.expiresAt.timeIntervalSince(now()) < Self.refreshLeeway {
+            do throws(RefreshFailure) {
+                session = try await refresher.session(replacing: session)
+            } catch {
+                throw AuthorizedCallError(error)
+            }
+        }
+        do throws(Failure) {
+            return try await call(session.accessToken)
+        } catch {
+            guard isUnauthorized(error) else {
+                throw .call(error)
+            }
+        }
+        do throws(RefreshFailure) {
+            session = try await refresher.session(replacing: session)
+        } catch {
+            throw AuthorizedCallError(error)
+        }
+        do throws(Failure) {
+            return try await call(session.accessToken)
+        } catch {
+            throw .call(error)
+        }
+    }
+
     /// Keeps the session on the device, so the account is there on the next launch.
     private func keep(_ session: Session) throws(AuthenticationError) -> Account {
         do throws(SessionStorageError) {
@@ -62,5 +108,15 @@ final class AuthenticationServiceImpl: AuthenticationService {
 
     private static func authenticationError(_ error: SessionResourceError) -> AuthenticationError {
         error == .unreachable ? .offline : .failed
+    }
+}
+
+private extension AuthorizedCallError {
+    init(_ failure: RefreshFailure) {
+        switch failure {
+        case .signedOut: self = .signedOut
+        case .offline: self = .offline
+        case .failed: self = .failed
+        }
     }
 }

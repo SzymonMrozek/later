@@ -1,5 +1,6 @@
 import AppleSignInImplementation
 import AuthenticationImplementation
+import BackgroundTaskImplementation
 import DeviceIDImplementation
 import HTTPNetworkingImplementation
 import KeychainImplementation
@@ -16,6 +17,7 @@ public enum AppCompositionModule {
         SessionStorageImplementationModule.register()
         DeviceIDImplementationModule.register()
         AppleSignInImplementationModule.register()
+        BackgroundTaskImplementationModule.register()
         SessionResourceImplementationModule.register()
         AuthenticationImplementationModule.register()
         LoginImplementationModule.register()

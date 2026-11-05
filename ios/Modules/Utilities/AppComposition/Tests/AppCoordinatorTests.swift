@@ -100,4 +100,11 @@ private final class FakeAuthenticationService: AuthenticationService {
     func continueAsGuest() async throws(AuthenticationError) -> Account {
         throw .failed
     }
+
+    func authorized<Value, Failure: Error>(
+        _: (_ accessToken: String) async throws(Failure) -> Value,
+        isUnauthorized _: (Failure) -> Bool
+    ) async throws(AuthorizedCallError<Failure>) -> Value {
+        throw .signedOut
+    }
 }

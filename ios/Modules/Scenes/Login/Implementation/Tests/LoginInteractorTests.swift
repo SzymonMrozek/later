@@ -119,6 +119,13 @@ private final class FakeAuthenticationService: AuthenticationService {
         try await answer(.guest)
     }
 
+    func authorized<Value, Failure: Error>(
+        _: (_ accessToken: String) async throws(Failure) -> Value,
+        isUnauthorized _: (Failure) -> Bool
+    ) async throws(AuthorizedCallError<Failure>) -> Value {
+        throw .signedOut
+    }
+
     /// Returns once a sign-in has started.
     func waitForCall() async {
         guard calls.isEmpty else {

@@ -1,8 +1,13 @@
 defmodule LaterWeb.SessionJSON do
   alias Later.Accounts.Account
 
-  def show(%{token: token, account: account}) do
-    %{token: token, account: account(account)}
+  def show(%{tokens: tokens, account: account}) do
+    %{
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      expires_at: tokens.expires_at,
+      account: account(account)
+    }
   end
 
   defp account(%Account{} = account) do

@@ -3,7 +3,8 @@ import Session
 public enum SessionResourceError: Error, Equatable, Sendable {
     /// The API couldn't be reached.
     case unreachable
-    /// The API refused the request, such as an Apple token that didn't verify.
+    /// The API refused the request, such as an Apple token that didn't verify or a refresh token
+    /// that was already used.
     case rejected
     /// The API answered with something the app can't read.
     case invalidResponse
@@ -42,4 +43,8 @@ public protocol SessionResource {
 
     /// A session for the Apple account; a guest account on `deviceID` becomes that account.
     func createAppleSession(_ credentials: AppleSessionCredentials) async throws(SessionResourceError) -> Session
+
+    /// The next session for the same account. `refreshToken` and the access token issued with it
+    /// stop working.
+    func refreshSession(refreshToken: String) async throws(SessionResourceError) -> Session
 }

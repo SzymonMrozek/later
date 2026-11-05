@@ -9,6 +9,7 @@ final class SessionResourceImpl: SessionResource {
     enum Endpoint {
         static let guest = "/api/sessions/guest"
         static let apple = "/api/sessions/apple"
+        static let refresh = "/api/sessions/refresh"
     }
 
     @Dependency private var http: HTTPNetworkingClient
@@ -19,6 +20,10 @@ final class SessionResourceImpl: SessionResource {
 
     func createAppleSession(_ credentials: AppleSessionCredentials) async throws(SessionResourceError) -> Session {
         try await createSession(at: Endpoint.apple, body: AppleSessionBody(credentials))
+    }
+
+    func refreshSession(refreshToken: String) async throws(SessionResourceError) -> Session {
+        try await createSession(at: Endpoint.refresh, body: RefreshSessionBody(refreshToken: refreshToken))
     }
 
     private func createSession(

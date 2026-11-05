@@ -12,5 +12,6 @@ defmodule LaterWeb.Router do
 
     post "/sessions/guest", SessionController, :guest
     post "/sessions/apple", SessionController, :apple
+    post "/sessions/refresh", SessionController, :refresh
   end
 end

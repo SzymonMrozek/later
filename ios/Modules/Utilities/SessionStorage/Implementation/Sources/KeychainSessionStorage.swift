@@ -28,13 +28,17 @@ final class KeychainSessionStorage: SessionStorage {
 
 /// How a session is written to the device. Its own format, so storage doesn't change when the API does.
 private nonisolated struct StoredSession: Codable {
-    let token: String
+    let accessToken: String
+    let refreshToken: String
+    let expiresAt: Date
     let accountID: String
     let isGuest: Bool
     let email: String?
 
     init(_ session: Session) {
-        token = session.token
+        accessToken = session.accessToken
+        refreshToken = session.refreshToken
+        expiresAt = session.expiresAt
         accountID = session.account.id.rawValue
         switch session.account.kind {
         case .guest:
@@ -47,10 +51,15 @@ private nonisolated struct StoredSession: Codable {
     }
 
     var session: Session? {
-        guard !token.isEmpty, !accountID.isEmpty else {
+        guard !accessToken.isEmpty, !refreshToken.isEmpty, !accountID.isEmpty else {
             return nil
         }
         let kind: Account.Kind = isGuest ? .guest : .apple(email: email)
-        return Session(token: token, account: Account(id: Account.ID(rawValue: accountID), kind: kind))
+        return Session(
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            expiresAt: expiresAt,
+            account: Account(id: Account.ID(rawValue: accountID), kind: kind)
+        )
     }
 }

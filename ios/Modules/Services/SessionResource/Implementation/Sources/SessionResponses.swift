@@ -1,4 +1,5 @@
 import Account
+import Foundation
 import Session
 import SessionResourceInterface
 
@@ -24,8 +25,14 @@ nonisolated struct AppleSessionBody: Encodable, Equatable, Sendable {
     }
 }
 
+nonisolated struct RefreshSessionBody: Encodable, Equatable, Sendable {
+    let refreshToken: String
+}
+
 nonisolated struct SessionResponse: Decodable, Equatable, Sendable {
-    let token: String
+    let accessToken: String
+    let refreshToken: String
+    let expiresAt: Date
     let account: AccountResponse
 }
 
@@ -40,7 +47,7 @@ extension Session {
     /// Nil when the response is missing a field or has an account kind the app doesn't know.
     init?(response: SessionResponse) {
         let account = response.account
-        guard !response.token.isEmpty, !account.id.isEmpty else {
+        guard !response.accessToken.isEmpty, !response.refreshToken.isEmpty, !account.id.isEmpty else {
             return nil
         }
         let kind: Account.Kind
@@ -49,6 +56,11 @@ extension Session {
         case "apple": kind = .apple(email: account.email)
         default: return nil
         }
-        self.init(token: response.token, account: Account(id: Account.ID(rawValue: account.id), kind: kind))
+        self.init(
+            accessToken: response.accessToken,
+            refreshToken: response.refreshToken,
+            expiresAt: response.expiresAt,
+            account: Account(id: Account.ID(rawValue: account.id), kind: kind)
+        )
     }
 }

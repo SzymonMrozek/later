@@ -13,12 +13,13 @@ Services      Authentication                                     product logic a
 Models        Account · Session                                  domain values, no server types
 Utilities     DependencyInjection · Coordinator · BuildConfiguration
               HTTPNetworking · Keychain · SessionStorage
-              DeviceID · AppleSignIn                             product-independent infrastructure
+              DeviceID · AppleSignIn · BackgroundTask            product-independent infrastructure
 
               Login ──▶ Authentication ──▶ SessionResource ──▶ HTTPNetworking
                                        ├─▶ SessionStorage  ──▶ Keychain
                                        ├─▶ DeviceID        ──▶ Keychain
-                                       └─▶ AppleSignIn          (every arrow: an Interface)
+                                       ├─▶ AppleSignIn
+                                       └─▶ BackgroundTask       (every arrow: an Interface)
 UIComponents  the design system (README.md there)                  reusable views
 ```
 
@@ -53,7 +54,10 @@ Each target directory has `Sources`, and `Resources` and `Tests` when it needs t
    interface speaks domain values (`SessionResource.createGuestSession(deviceID:) -> Session`); its
    implementation holds the paths, request and response bodies and their mapping, and calls the
    HTTP client. Response types never leave it, so an API change stops there. Services call resources,
-   never the HTTP client.
+   never the HTTP client. A resource that needs a signed-in account takes the access token as a
+   parameter; services get it through `AuthenticationService.authorized`, which refreshes the session
+   before it expires and once after a 401. One refresh runs at a time, as a background task, and
+   retries until the API answers.
 3. **Each implementation registers itself.** `<Name>ImplementationModule.register()` binds its
    contracts in `DependencyInjectionContainer.shared`; `AppCompositionModule.register()` calls them all,
    in one visible list.
