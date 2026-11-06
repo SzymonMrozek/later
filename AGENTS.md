@@ -26,6 +26,7 @@ All tools are pinned in `mise.toml`. `mise run setup` once after cloning.
 | API on this worktree's port and database | `mise run server:dev` |
 | Server tests / lint | `mise run server:test` · `mise run server:lint` |
 | App on this worktree's simulator | `mise run ios:run` |
+| App on a connected iPhone, with the API reachable from it | `mise run ios:device` · `mise run server:lan` |
 | iOS tests / lint | `mise run ios:test` · `mise run ios:lint` |
 | What the merge queue runs | `mise run check` |
 

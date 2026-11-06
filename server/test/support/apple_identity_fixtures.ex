@@ -15,7 +15,7 @@ defmodule Later.AppleIdentityFixtures do
       Map.merge(
         %{
           "iss" => "https://appleid.apple.com",
-          "aud" => "dev.mrozek.later",
+          "aud" => "com.later",
           "sub" => "001234.#{System.unique_integer([:positive])}",
           "iat" => System.os_time(:second),
           "exp" => System.os_time(:second) + 600

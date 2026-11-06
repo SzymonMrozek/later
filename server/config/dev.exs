@@ -18,8 +18,8 @@ config :later, Later.Repo,
 # to bundle .js and .css sources.
 config :later, LaterWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
-  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}],
+  # `mise run server:lan` sets LATER_DEV_LAN so an iPhone on the same network can reach it.
+  http: [ip: if(System.get_env("LATER_DEV_LAN"), do: {0, 0, 0, 0}, else: {127, 0, 0, 1})],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,

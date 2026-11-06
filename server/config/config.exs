@@ -12,7 +12,7 @@ config :later,
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
 # Sign in with Apple identity tokens must be issued for this bundle ID.
-config :later, :apple_bundle_id, "dev.mrozek.later"
+config :later, :apple_bundle_id, "com.later"
 
 # Configure the endpoint
 config :later, LaterWeb.Endpoint,

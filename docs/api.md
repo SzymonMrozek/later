@@ -53,7 +53,7 @@ Sign in with Apple.
 
 `given_name`, `family_name` and `email` are sent only on the first sign-in, and only if the person
 shared them. The server verifies `identity_token` against Apple's keys and this app's bundle ID
-(`dev.mrozek.later`), and identifies the person by its `sub`. If `device_id` has a guest account,
+(`com.later`), and identifies the person by its `sub`. If `device_id` has a guest account,
 the Apple account takes over its library. For a new person the guest account becomes the Apple
 account, so its sessions keep working; if the person already has an Apple account, the guest is
 merged into it and its sessions end. Either way a later guest sign-in with that `device_id` creates

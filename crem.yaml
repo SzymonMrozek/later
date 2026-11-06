@@ -1,0 +1,19 @@
+team: KSMJS9552W
+
+appStoreConnect:
+  keyIdEnv: ASC_KEY_ID
+  issuerIdEnv: ASC_ISSUER_ID
+  privateKeyPath: "~/.private_keys/AuthKey_{keyId}.p8"
+
+vaults:
+  - local: {}
+
+profiles:
+  - kind: ad-hoc
+    name: "{bundleId} AdHoc"
+    devices: all
+
+apps:
+  - name: Later
+    environments:
+      Production: com.later

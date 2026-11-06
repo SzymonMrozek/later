@@ -284,7 +284,7 @@ let project = Project(
             name: "Later",
             destinations: .iOS,
             product: .app,
-            bundleId: "dev.mrozek.later",
+            bundleId: "com.later",
             deploymentTargets: deploymentTargets,
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": "Later",
@@ -295,6 +295,8 @@ let project = Project(
                 "LaterAPIBaseURL": "$(LATER_API_BASE_URL)",
                 // The development server runs on localhost over plain HTTP.
                 "NSAppTransportSecurity": ["NSAllowsLocalNetworking": true],
+                // A device build reaches the development server on the Mac over the local network.
+                "NSLocalNetworkUsageDescription": "Later łączy się z serwerem deweloperskim w sieci lokalnej.",
             ]),
             sources: ["Later/Sources/**"],
             resources: ["Later/Resources/**"],
@@ -302,6 +304,12 @@ let project = Project(
             dependencies: [.target(name: "AppComposition")],
             settings: .settings(base: [
                 "LATER_API_BASE_URL": .string(Environment.laterApiBaseUrl.getString(default: "http://localhost:4000")),
+                // Device builds use the Ad Hoc profile from crem.yaml; simulator builds sign locally.
+                "DEVELOPMENT_TEAM": "KSMJS9552W",
+                "CODE_SIGN_STYLE": "Manual",
+                "CODE_SIGN_IDENTITY[sdk=iphonesimulator*]": "-",
+                "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "Apple Distribution",
+                "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]": "com.later AdHoc",
             ])
         ),
     ] + modules.flatMap(\.targets),

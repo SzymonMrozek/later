@@ -5,6 +5,7 @@ python = "3.13"
 tuist = "4.214.0"
 swiftlint = "0.65.1"
 swiftformat = "0.64.3"
+"packslip:damian-kolasinski/crem" = "0.2.0"
 
 # Per-worktree PORT and LATER_DB_NAME come from mise.local.toml, written by .config/wt.toml.
 
@@ -51,6 +52,11 @@ description = "Generate the Xcode workspace with Tuist, pointing the app at this
 dir = "ios"
 run = 'TUIST_LATER_API_BASE_URL="http://localhost:${PORT:-4000}" tuist generate --no-open'
 
+[tasks."server:lan"]
+description = "Like server:dev, but reachable from other devices on the local network."
+env = { LATER_DEV_LAN = "1" }
+run = "mise run server:dev"
+
 [tasks."ios:build"]
 description = "Build the app for this worktree's simulator."
 run = "scripts/ios.sh build"
@@ -62,6 +68,10 @@ run = "scripts/ios.sh test"
 [tasks."ios:run"]
 description = "Build, install and launch the app on this worktree's simulator."
 run = "scripts/ios.sh run"
+
+[tasks."ios:device"]
+description = "Build an Ad Hoc app and run it on a connected iPhone (signing from crem.yaml)."
+run = "scripts/ios.sh device"
 
 [tasks."ios:lint"]
 description = "SwiftLint, SwiftFormat in check mode, and the module graph: imports declared, edges allowed."

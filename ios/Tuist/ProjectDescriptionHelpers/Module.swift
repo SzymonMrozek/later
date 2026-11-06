@@ -107,7 +107,7 @@ public struct Module {
                 name: part.name,
                 destinations: .iOS,
                 product: .staticFramework,
-                bundleId: "dev.mrozek.later.\(part.name)",
+                bundleId: "com.later.\(part.name)",
                 deploymentTargets: deploymentTargets,
                 sources: ["\(part.directory)/Sources/**"],
                 resources: part.hasResources ? ["\(part.directory)/Resources/**"] : nil,
@@ -121,7 +121,7 @@ public struct Module {
                 name: "\(part.name)Tests",
                 destinations: .iOS,
                 product: .unitTests,
-                bundleId: "dev.mrozek.later.\(part.name)Tests",
+                bundleId: "com.later.\(part.name)Tests",
                 deploymentTargets: deploymentTargets,
                 sources: ["\(part.directory)/Tests/**"],
                 dependencies: ([part.name] + tests.dependencies).map { .target(name: $0) }
